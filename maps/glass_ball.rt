@@ -1,0 +1,27 @@
+A 0.1 255,255,255
+C 0,1.5,5 0,0,-1 70
+L -10,10,10 0.8 255,255,255
+
+# Checkered floor (reflective)
+pl 0,0,0 0,1,0 150,150,150 ref:0.4
+
+# Left wall
+pl -5,0,0 1,0,0 200,100,100 ref:0.2
+
+# Right wall  
+pl 5,0,0 -1,0,0 100,100,200 ref:0.2
+
+# Large glass sphere - standard glass (1.5)
+sp 0,1,0 2.0 240,240,255 refr:0.95:1.5 ref:0.04
+
+# Small glass sphere inside (creates air bubble effect)
+sp 0,1,0 1.3 240,255,240 refr:0.95:1.0 ref:0.04
+
+# Red sphere behind glass (for refraction visibility)
+sp 0,1,-3 1.5 255,50,50
+
+# Small reflective sphere (left)
+sp -2.5,0.5,1 1.0 255,215,0 ref:0.8
+
+# Small blue sphere (right)
+sp 2.5,0.5,1 1.0 50,150,255 ref:0.3

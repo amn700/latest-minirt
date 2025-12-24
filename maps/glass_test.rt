@@ -1,0 +1,12 @@
+A 0.3 255,255,255
+C 0,0,15 0,0,-1 70
+L -10,10,10 0.8 255,255,255
+
+# Simple gray floor
+pl 0,-2,0 0,1,0 150,150,150 shine:50
+
+# Big red sphere far behind - should be clearly visible through glass
+sp 0,0,-8 3.0 255,0,0 shine:200
+
+# Glass sphere in front - pure transparent glass
+sp 0,0,0 2.0 255,255,255 refr:1.0:1.5 shine:300

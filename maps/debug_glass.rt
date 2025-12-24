@@ -1,0 +1,39 @@
+A 0.3 255,255,255
+C 0,7,14 0,-0.4,-1 70
+# L 8,8,4 0.7 150,150,150
+L -8,8,4 0.7 150,150,150
+
+# Glass spheres with varying transparency
+sp 0,5,0 1 255,255,255 refr:0.9:1.5 ref:0.1 shine:300
+# sp 5,2,0 2 255,255,255 refr:0.85:1.5 ref:0.1 shine:300
+# sp -6,3,0 3 255,255,255 refr:0.9:1.5 ref:0.1 shine:300
+sp -2,5,-5 2 255,255,255 refr:0.9:1.5 ref:0.15 shine:300
+sp 0,1,0 2 255,255,0 refr:0.3:1.5 shine:200
+
+# Boulder 1 - grey sphere and yellow cylinder
+sp 8,0,-8 3 80,80,80 ref:0.05 shine:50
+cy 8,5,-8 0,1,0 1 10 255,255,0 ref:0.05 shine:200
+
+# Boulder 2
+sp -8,0,-8 3 80,80,80 ref:0.05 shine:50
+cy -8,5,-8 0,1,0 1 10 255,255,0 ref:0.05 shine:200
+
+# Boulder 3
+sp 8,0,8 3 80,80,80 ref:0.05 shine:50
+# cy 8,5,8 0,1,0 1 10 255,255,0 ref:0.05 shine:200
+
+# Boulder 4
+sp -8,0,8 3 80,80,80 ref:0.05 shine:50
+# cy -8,5,8 0,1,0 1 10 255,255,0 ref:0.05 shine:200
+
+# Walls - x axis
+pl 10,0,0 -1,0,0 180,180,180 shine:10
+# pl -10,0,0 1,0,0 180,180,180 shine:10
+
+# Walls - y axis (ceiling and floor)
+pl 0,10,0 0,-1,0 200,200,200 shine:10
+# pl 0,0,0 0,1,0 220,220,220 ref:0.1 shine:50
+
+# Walls - z axis
+pl 0,0,15 0,0,-1 160,160,160 shine:10
+# pl 0,0,-10 0,0,1 160,160,160 shine:10

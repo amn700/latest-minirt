@@ -1,0 +1,21 @@
+A 0.1 255,255,255
+C 0,3,10 0,-0.2,-1 70
+L -5,10,10 0.9 255,255,255
+
+# Reflective floor
+pl 0,0,0 0,1,0 120,120,120 ref:0.3
+
+# Red opaque sphere (left)
+sp -4,1.5,0 3.0 255,50,50
+
+# Glass sphere (center) - 95% transparent, refractive index 1.5 (glass)
+sp 0,1.5,0 3.0 220,220,255 refr:0.95:1.5
+
+# Blue reflective sphere (right)
+sp 4,1.5,0 3.0 50,50,255 ref:0.7
+
+# Glass cylinder with slight reflection
+cy -6,2,-4 0,1,0 1.5 4.0 200,255,255 refr:0.9:1.5 ref:0.1
+
+# Semi-transparent green sphere behind
+sp 0,1,5 2.0 50,255,50 refr:0.5:1.3

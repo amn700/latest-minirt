@@ -1,0 +1,293 @@
+==71779== Memcheck, a memory error detector
+==71779== Copyright (C) 2002-2024, and GNU GPL'd, by Julian Seward et al.
+==71779== Using Valgrind-3.24.0 and LibVEX; rerun with -h for copyright info
+==71779== Command: ./miniRT ../maps/minimal.rt
+==71779== Parent PID: 68870
+==71779== 
+==71779== realloc() with size 0
+==71779==    at 0x4851E10: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x76D8589: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76DFDBB: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76F785E: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76F7CBC: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76EED4E: NvGlEglApiInit (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x5767DB0: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x5767E94: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x57E7945: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x5766086: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x576EFA8: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x592E327: loadEGLExternalPlatform (in /usr/lib/x86_64-linux-gnu/libnvidia-egl-wayland.so.1.1.17)
+==71779==  Address 0x5528f90 is 0 bytes after a block of size 0 alloc'd
+==71779==    at 0x484A858: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x76D8576: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76DFDBB: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76F785E: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76F7CBC: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76EED4E: NvGlEglApiInit (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x5767DB0: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x5767E94: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x57E7945: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x5766086: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x576EFA8: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x592E327: loadEGLExternalPlatform (in /usr/lib/x86_64-linux-gnu/libnvidia-egl-wayland.so.1.1.17)
+==71779== 
+==71779== posix_memalign() invalid size value: 0
+==71779==    at 0x4852A08: posix_memalign (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x76D85B9: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76DFDBB: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76F785E: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76F7CBC: ??? (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x76EED4E: NvGlEglApiInit (in /usr/lib/x86_64-linux-gnu/libnvidia-eglcore.so.580.95.05)
+==71779==    by 0x5767DB0: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x5767E94: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x57E7945: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x5766086: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x576EFA8: ??? (in /usr/lib/x86_64-linux-gnu/libEGL_nvidia.so.580.95.05)
+==71779==    by 0x592E327: loadEGLExternalPlatform (in /usr/lib/x86_64-linux-gnu/libnvidia-egl-wayland.so.1.1.17)
+==71779== 
+==71779== 
+==71779== HEAP SUMMARY:
+==71779==     in use at exit: 347,088 bytes in 3,131 blocks
+==71779==   total heap usage: 635,969 allocs, 632,838 frees, 83,506,675 bytes allocated
+==71779== 
+==71779== 1 bytes in 1 blocks are definitely lost in loss record 1 of 2,973
+==71779==    at 0x484A858: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5CDCD89: g_malloc (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x5D0B658: g_strdup (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x5B242EE: ???
+==71779==    by 0x40054AE: call_init.part.0 (dl-init.c:74)
+==71779==    by 0x40055C3: call_init (dl-init.c:120)
+==71779==    by 0x40055C3: _dl_init (dl-init.c:121)
+==71779==    by 0x4002551: _dl_catch_exception (dl-catch.c:215)
+==71779==    by 0x400CB88: dl_open_worker (dl-open.c:799)
+==71779==    by 0x40024BB: _dl_catch_exception (dl-catch.c:241)
+==71779==    by 0x400CFB3: _dl_open (dl-open.c:874)
+==71779==    by 0x4A9A683: dlopen_doit (dlopen.c:56)
+==71779==    by 0x40024BB: _dl_catch_exception (dl-catch.c:241)
+==71779== 
+==71779== 7 bytes in 1 blocks are definitely lost in loss record 3 of 2,973
+==71779==    at 0x484A858: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5CDCD89: g_malloc (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x5D0B658: g_strdup (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x5B24EB9: ???
+==71779==    by 0x54D522C: ???
+==71779==    by 0x5CF98B8: g_option_context_parse (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x54D5EEC: ???
+==71779==    by 0x54DB781: ???
+==71779==    by 0x4870F05: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779== 
+==71779== 8 bytes in 1 blocks are definitely lost in loss record 14 of 2,973
+==71779==    at 0x4851E10: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x525C1FD: ???
+==71779==    by 0x52512AC: ???
+==71779==    by 0x52562F0: ???
+==71779==    by 0x5256677: ???
+==71779==    by 0x4870DE1: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118421: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 8 bytes in 1 blocks are definitely lost in loss record 15 of 2,973
+==71779==    at 0x484A858: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5CDCD89: g_malloc (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x5D0B658: g_strdup (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x5B2DA1C: ???
+==71779==    by 0x4870EF7: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118421: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 29 bytes in 1 blocks are definitely lost in loss record 290 of 2,973
+==71779==    at 0x484A858: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x52772D3: ???
+==71779==    by 0x5256A87: ???
+==71779==    by 0x4870DE1: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118421: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 29 bytes in 1 blocks are definitely lost in loss record 291 of 2,973
+==71779==    at 0x484A858: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x52772D3: ???
+==71779==    by 0x5256A4A: ???
+==71779==    by 0x4870DE1: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118421: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 38 bytes in 1 blocks are definitely lost in loss record 1,168 of 2,973
+==71779==    at 0x484A858: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x52772D3: ???
+==71779==    by 0x5256851: ???
+==71779==    by 0x4870DE1: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118421: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 96 (24 direct, 72 indirect) bytes in 1 blocks are definitely lost in loss record 2,906 of 2,973
+==71779==    at 0x484A858: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5281585: ???
+==71779==    by 0x52679DD: ???
+==71779==    by 0x526DD37: ???
+==71779==    by 0x5256112: ???
+==71779==    by 0x525639B: ???
+==71779==    by 0x5256677: ???
+==71779==    by 0x4870DE1: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118421: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779== 
+==71779== 96 bytes in 1 blocks are definitely lost in loss record 2,907 of 2,973
+==71779==    at 0x4851BE3: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5026454: wl_proxy_marshal_array_flags (in /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.23.1)
+==71779==    by 0x5027859: wl_proxy_marshal_flags (in /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.23.1)
+==71779==    by 0x48AB305: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x48931FF: glfwCreateWindow (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118507: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 96 bytes in 1 blocks are definitely lost in loss record 2,908 of 2,973
+==71779==    at 0x4851BE3: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5026454: wl_proxy_marshal_array_flags (in /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.23.1)
+==71779==    by 0x5027859: wl_proxy_marshal_flags (in /usr/lib/x86_64-linux-gnu/libwayland-client.so.0.23.1)
+==71779==    by 0x48AB3A1: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x48931FF: glfwCreateWindow (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118507: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 111 (32 direct, 79 indirect) bytes in 1 blocks are definitely lost in loss record 2,909 of 2,973
+==71779==    at 0x4851E10: realloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5CDD179: g_realloc (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x5CA0ECB: g_ptr_array_add (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x5D0E2B7: g_strsplit (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x565B5F8: ???
+==71779==    by 0x54FD7F1: ???
+==71779==    by 0x54FE4A3: ???
+==71779==    by 0x54FE517: ???
+==71779==    by 0x54FE70E: ???
+==71779==    by 0x573E1AB: ???
+==71779==    by 0x54DB900: ???
+==71779==    by 0x5CFA2B9: g_option_context_parse (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779== 
+==71779== 160 (112 direct, 48 indirect) bytes in 1 blocks are definitely lost in loss record 2,921 of 2,973
+==71779==    at 0x4851BE3: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5277941: ???
+==71779==    by 0x5255079: ???
+==71779==    by 0x5256712: ???
+==71779==    by 0x4870DE1: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118421: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 184 (40 direct, 144 indirect) bytes in 1 blocks are definitely lost in loss record 2,929 of 2,973
+==71779==    at 0x4851BE3: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5B8CCED: ???
+==71779==    by 0x5B7FA6F: ???
+==71779==    by 0x4895D78: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x48AB4AD: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x48931FF: glfwCreateWindow (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118507: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 192 (96 direct, 96 indirect) bytes in 1 blocks are definitely lost in loss record 2,931 of 2,973
+==71779==    at 0x484A858: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5CDCD89: g_malloc (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x5CC93E7: g_hash_table_new_full (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x54DBA22: ???
+==71779==    by 0x5CFA2B9: g_option_context_parse (in /usr/lib/x86_64-linux-gnu/libglib-2.0.so.0.8400.1)
+==71779==    by 0x54D5EEC: ???
+==71779==    by 0x54DB781: ???
+==71779==    by 0x4870F05: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118421: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779== 
+==71779== 520 bytes in 13 blocks are definitely lost in loss record 2,951 of 2,973
+==71779==    at 0x484A858: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x526D4B9: ???
+==71779==    by 0x5256578: ???
+==71779==    by 0x4870DE1: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118421: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 727 (184 direct, 543 indirect) bytes in 1 blocks are definitely lost in loss record 2,954 of 2,973
+==71779==    at 0x4851BE3: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5266B54: ???
+==71779==    by 0x5267B90: ???
+==71779==    by 0x525637C: ???
+==71779==    by 0x5256677: ???
+==71779==    by 0x4870DE1: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118421: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 2,880 (2,696 direct, 184 indirect) bytes in 1 blocks are definitely lost in loss record 2,964 of 2,973
+==71779==    at 0x4851BE3: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x5B8D30E: ???
+==71779==    by 0x5B8DB8F: ???
+==71779==    by 0x566E144: ???
+==71779==    by 0x4895D34: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x48AB4AD: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x48931FF: glfwCreateWindow (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118507: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779==    by 0x10A7E2: initialize_mlx (main.c:29)
+==71779==    by 0x10AEC1: main (main.c:96)
+==71779== 
+==71779== 9,466 (48 direct, 9,418 indirect) bytes in 1 blocks are definitely lost in loss record 2,968 of 2,973
+==71779==    at 0x4851BE3: calloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==71779==    by 0x52778DA: ???
+==71779==    by 0x5280D7E: ???
+==71779==    by 0x5280E24: ???
+==71779==    by 0x524D691: ???
+==71779==    by 0x5254F9A: ???
+==71779==    by 0x5256712: ???
+==71779==    by 0x4870DE1: ???
+==71779==    by 0x50A2AA1: ???
+==71779==    by 0x48AED6D: ??? (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x4892A6D: glfwInit (in /usr/lib/x86_64-linux-gnu/libglfw.so.3.4)
+==71779==    by 0x118421: mlx_init (in /home/amn/Desktop/miniRT/mandatory/miniRT)
+==71779== 
+==71779== LEAK SUMMARY:
+==71779==    definitely lost: 4,064 bytes in 30 blocks
+==71779==    indirectly lost: 10,584 bytes in 67 blocks
+==71779==      possibly lost: 0 bytes in 0 blocks
+==71779==    still reachable: 330,008 bytes in 3,006 blocks
+==71779==         suppressed: 32 bytes in 1 blocks
+==71779== Reachable blocks (those to which a pointer was found) are not shown.
+==71779== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==71779== 
+==71779== For lists of detected and suppressed errors, rerun with: -s
+==71779== ERROR SUMMARY: 20 errors from 20 contexts (suppressed: 0 from 0)

@@ -1,0 +1,14 @@
+A 0.3 255,255,255
+C 0,4,12 0,-0.35,-1 70
+L -8,12,8 0.8 255,255,255
+
+# Floor with slight reflection
+pl 0,0,0 0,1,0 180,180,180 ref:0.2 shine:50
+
+# Colored spheres well behind glass - clearly separated
+sp -3,2,-8 2.5 255,0,0 shine:200
+sp 3,2,-8 2.5 0,0,255 shine:200
+sp 0,1,-6 2.0 0,255,0 shine:200
+
+# Glass ball - transparent with Fresnel reflection (edges reflect more)
+sp 0,2.5,0 3.0 255,255,255 refr:0.9:1.5 ref:0.1 shine:300

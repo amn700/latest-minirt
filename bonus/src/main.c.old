@@ -1,0 +1,1230 @@
+#include "../includes/miniRT.h"
+#include "../includes/parsing.h"
+
+// t_cylinder cylinder(void);
+t_plane plane(void);
+t_cylinder cylinder(void);
+void	ft_add_intersection(t_inters **lst, t_inters *new);
+t_inters	*new_intersection(float t, t_object *obj);
+bool    intersect_cylinder(t_cylinder *cyl, t_ray ray, t_inters **intersections);
+t_tuple cylinder_normal_at(t_cylinder cyl, t_tuple point);
+
+
+bool  is_shadowed(t_world world, t_tuple point, t_light *light)
+{
+	t_tuple v = substract_tuple(light->origin, point);
+	float distance = vector_magnitude(v);
+	t_tuple direction = normalizing_vector(v);
+
+	t_ray shadow_ray = {point, direction};
+	t_inters *intersections = intersect_world(world, shadow_ray );
+	float h = hit(intersections);
+	
+	// Free the intersection list
+	while (intersections)
+	{
+		t_inters *next = intersections->next;
+		free(intersections);
+		intersections = next;
+	}
+	
+	if (h >= 0 && h < distance)
+		return true;
+	else
+		return false;
+}
+
+t_tuple shade_hit(t_world world, t_comps *comp)
+{
+	t_tuple final_color = (t_tuple){0, 0, 0, 0};
+	t_light *light = world.lights;
+
+	//loop through all lights in the world
+	while (light)
+	{
+		//add color from each light
+		bool in_shadow = is_shadowed(world, comp->over_point, light);
+		// Use over_point to avoid shadow acne
+		t_tuple light_contribution;
+		if (comp->obj->type == OBJ_SPHERE)
+			 light_contribution = lighting(comp->obj->shape.sp.material, *light, comp->point, comp->eyev, comp->normalv, in_shadow, world.ambient_color);
+		else if (comp->obj->type == OBJ_PLANE)
+			 light_contribution = lighting(comp->obj->shape.pl.material, *light, comp->point, comp->eyev, comp->normalv, in_shadow, world.ambient_color); 
+		else if (comp->obj->type == OBJ_CYLINDER)
+		{
+			light_contribution = lighting(comp->obj->shape.cy.material, *light, comp->point, comp->eyev, comp->normalv, in_shadow, world.ambient_color);
+		}
+		final_color = add_tuple(final_color, light_contribution);
+		light = light->next;
+	}
+	final_color.w = 0; // Ensure w is 0 for colors
+	return final_color;
+}
+
+
+t_tuple color_at(t_world world, t_ray ray)
+{
+	t_inters *intersections = intersect_world(world, ray);
+	if (!intersections)
+		return (t_tuple){0, 0, 0, 0}; // Black for no hit
+	
+	float hit_t = hit(intersections);
+	if (hit_t < 0)
+	{
+		// Clean up and return black
+		t_inters *cur = intersections;
+		while (cur)
+		{
+			t_inters *tmp = cur->next;
+			if (cur->object)
+				free(cur->object);
+			free(cur);
+			cur = tmp;
+		}
+		return (t_tuple){0, 0, 0, 0};
+	}
+	
+	// Find the intersection matching the hit t
+	// first positive intersection
+	t_inters *hit_i = intersections;
+	while (hit_i && !f_equal(hit_i->t, hit_t))
+		hit_i = hit_i->next;
+	
+	t_comps *comp = prepare_computations(hit_i, ray);
+	t_tuple color = shade_hit(world, comp);
+	
+	// Clean up
+	free(comp);
+	t_inters *cur = intersections;
+	while (cur)
+	{
+		t_inters *tmp = cur->next;
+		if (cur->object)
+			free(cur->object);
+		free(cur);
+		cur = tmp;
+	}
+	
+	return color;
+}
+
+t_matrix orientation(t_tuple left, t_tuple true_up, t_tuple forward)
+{
+	t_matrix ort;
+	ort.mtrx[0][0] = left.x;
+	ort.mtrx[0][1] = left.y;
+	ort.mtrx[0][2] = left.z;
+	ort.mtrx[0][3] = 0;
+
+	ort.mtrx[1][0] = true_up.x;
+	ort.mtrx[1][1] = true_up.y;
+	ort.mtrx[1][2] = true_up.z;
+	ort.mtrx[1][3] = 0;
+
+	ort.mtrx[2][0] = -forward.x;
+	ort.mtrx[2][1] = -forward.y;
+	ort.mtrx[2][2] = -forward.z;
+	ort.mtrx[2][3] = 0;
+
+	ort.mtrx[3][0] = 0;
+	ort.mtrx[3][1] = 0;
+	ort.mtrx[3][2] = 0;
+	ort.mtrx[3][3] = 1;
+	return ort;
+}
+
+t_matrix view_transformation(t_tuple from, t_tuple to, t_tuple up)
+{
+	t_tuple forward = normalizing_vector(substract_tuple(to, from));
+	t_tuple left = vecs_cross_product(forward, normalizing_vector(up));
+	t_tuple true_up = vecs_cross_product(left, forward);
+	t_matrix orient = orientation(left, true_up, forward);
+	orient.size = 4;
+	//construct the orientation matrix
+	return (multiply_matrix(orient, translation(-from.x, -from.y, -from.z)));
+}
+
+
+
+t_camera	camera(double hsize, double vsize, double field_of_view)
+{
+	t_camera cam;
+	cam.h_view = hsize;
+	cam.v_view = vsize;
+	cam.fov = field_of_view;
+	// cam.pixel_size = 0;
+	cam.transform = identity();
+	cam.transform.size = 4;
+	// cam.pixel_size = 2 * tan(field_of_view / 2) / hsize;
+	double half_view = tan(field_of_view / 2);
+	double aspect = hsize / vsize;
+	if (aspect >= 1)
+	{
+		cam.half_width = half_view;
+		cam.half_height = half_view / aspect;
+	}
+	else
+	{
+		cam.half_width = half_view * aspect;
+		cam.half_height = half_view;
+	}
+	cam.pixel_size = (cam.half_width * 2) / cam.h_view;
+	return cam;
+}
+
+t_ray	ray_for_pixel(t_camera cam, double px, double py)
+{
+	//the offset from the edge of the canvas to the pixel's center
+	double xoffset = (px + 0.5) * cam.pixel_size;
+	double yoffset = (py + 0.5) * cam.pixel_size;
+
+	//the untransformed coordinates of the pixel in world space
+	double world_x = cam.half_width - xoffset;
+	double world_y = cam.half_height - yoffset;
+
+	//using the camera matrix, transform the canvas point and the origin,
+	//and then compute the ray's direction vector
+	//remember that the canvas is at z = -1
+	t_matrix inv = inverse_matrix(cam.transform);
+	t_tuple pixel = multiply_matrix_by_tuple(inv, (t_tuple){world_x, world_y, -1, 1});
+	t_tuple origin = multiply_matrix_by_tuple(inv, (t_tuple){0, 0, 0, 1});
+	t_tuple direction = normalizing_vector(substract_tuple(pixel, origin));
+	return (t_ray){origin, direction};
+}
+
+void print_progress_bar(int current, int total, int bar_width)
+{
+	float progress = (float)current / total;
+	int pos = bar_width * progress;
+	
+	printf("\r[");
+	for (int i = 0; i < bar_width; i++)
+	{
+		if (i < pos)
+			printf("█");
+		else if (i == pos)
+			printf(">");
+		else
+			printf(" ");
+	}
+	printf("] %d%%", (int)(progress * 100));
+	fflush(stdout);
+	if (current == total)
+		printf("\n");
+}
+
+mlx_image_t *render(mlx_t *mlx, t_camera cam, t_world world)
+{
+	if (!mlx)
+		return NULL;
+	mlx_image_t *img = mlx_new_image(mlx, (int)cam.h_view, (int)cam.v_view);
+	if (!img)
+		return NULL;
+	
+	int total_pixels = (int)cam.h_view * (int)cam.v_view;
+	int pixels_rendered = 0;
+	int last_percent = -1;
+	
+	printf("\n🎨 Rendering %dx%d scene...\n", (int)cam.h_view, (int)cam.v_view);
+	
+	int i = 0;
+	int j = 0;
+	while (j < (int)cam.v_view)
+	{
+		i = 0;
+		while (i < (int)cam.h_view)
+		{
+			t_ray ray = ray_for_pixel(cam, (double)i, (double)j);
+
+			t_tuple color = color_at(world, ray);
+			uint8_t r = (uint8_t)(fmin(color.x, 1.0) * 255);
+			uint8_t g = (uint8_t)(fmin(color.y, 1.0) * 255);
+			uint8_t b = (uint8_t)(fmin(color.z, 1.0) * 255);
+			uint32_t pixel_color = (r << 24) | (g << 16) | (b << 8) | 0xFF;
+			mlx_put_pixel(img, i, j, pixel_color);
+			
+			pixels_rendered++;
+			int current_percent = (pixels_rendered * 100) / total_pixels;
+			if (current_percent != last_percent)
+			{
+				print_progress_bar(pixels_rendered, total_pixels, 50);
+				last_percent = current_percent;
+			}
+			
+			i++;
+		}
+		j++;
+	}
+	printf("✅ Rendering complete!\n\n");
+	return img;
+}
+
+void ll(mlx_key_data_t keydata, void *param)
+{
+	t_data *data;
+
+	data = (t_data *)param;
+	if (keydata.action == MLX_PRESS)
+	{
+		if (keydata.key == MLX_KEY_T)
+		{
+			mlx_image_to_ppm(data->img, "output.ppm", 255);
+		}
+	}
+}
+
+int main (int argc, char **argv)
+{
+	t_data data = {0};
+	t_world world;
+	t_camera cam;
+	
+	// If a scene file is provided, parse it and use it
+	if (argc == 2)
+	{
+		if (!complete_parsing(argv[1], &data))
+			return (1);
+		printf("\n✅ Parsing completed successfully!\n");
+		// Validate the parsed data
+		// check_parsed_data(&data);
+		
+		// Use parsed data to build the world
+		world = new_world();
+		world.objects = data.object;
+		world.lights = data.light;
+		world.ambient_color = data.ambl.color;
+		
+		// Setup camera from parsed data
+		cam = camera(1920, 1080, data.cam.fov * M_PI / 180.0);
+		cam.transform = view_transformation(data.cam.from, data.cam.to, data.cam.up);
+		
+		// Debug world state and transformations
+		// debug_world_state(world, cam);
+		
+		printf("\nRendering scene from file...\n");
+		
+		// Initialize MLX
+		data.ptr = mlx_init((int)cam.h_view, (int)cam.v_view, "miniRT", false);
+		if (!data.ptr)
+		{
+			printf("❌ Failed to initialize MLX\n");
+			return (1);
+		}
+		
+		data.img = render(data.ptr, cam, world);
+		if (!data.img)
+		{
+			printf("❌ Failed to create image\n");
+			mlx_terminate(data.ptr);
+			return (1);
+		}
+
+		mlx_image_to_window(data.ptr, data.img, 0, 0);
+		mlx_key_hook(data.ptr, ll, &data);
+		printf("✅ Scene rendered. Press 'T' to save to output.ppm\n");
+		mlx_loop(data.ptr);
+		return (0);
+	}
+	
+	printf("❌ Usage: %s <scene_file.rt>\n", argv[0]);
+	return (1);
+}
+
+
+
+	// // Default hardcoded scene if no file provided
+	// printf("No scene file provided, using default scene...\n");
+	// world = new_world();
+	// world.ambient_color = (t_tuple){1, 1, 1, 0};  // White ambient light
+	
+	// t_plane floor = plane();
+	// floor.trans = identity();  // Plane at y = 0 by default
+	// floor.material = material();
+	// floor.material.color = (t_tuple){1, 1, 1, 0};  // Light gray
+	// floor.material.specular = 0;
+	// floor.material.diffuse = 0.9;
+	
+	// t_cylinder cyl = cylinder();
+	// cyl.trans = multiply_matrix(translation(0, 1, 0), multiply_matrix(rotation_z(M_PI / 2), scaling(1, 2, 1)));
+	// cyl.material = material();
+	// cyl.material.color = (t_tuple){1, 0, 0, 0};
+	// cyl.material.specular = 0.5;
+	// cyl.material.diffuse = 0.7;
+	// cyl.minimum = 0;
+	// cyl.maximum = 0.5;
+	
+	// t_cylinder cyl1 = cylinder();
+	// cyl1.trans = multiply_matrix(translation(0, 1, 0), multiply_matrix(rotation_z(M_PI / 2), scaling(1, 2, 1)));
+	// cyl1.material = material();
+	// cyl1.material.color = (t_tuple){0, 0, 1, 0};
+	// cyl1.material.specular = 0.5;
+	// cyl1.material.diffuse = 0.7;
+	// cyl1.minimum = -0.5;
+	// cyl1.maximum = 0;
+
+	// t_sphere sp = sphere();
+	// sp.material = material();
+	// sp.trans  = multiply_matrix(translation(-1, 1, 0), scaling(1, 1, 1));
+	// sp.material.specular = 0.5;
+	// sp.material.diffuse = 0.7;
+	// sp.material.color = (t_tuple){1,0,0,0};
+
+	// t_sphere sp1 = sphere();
+	// sp1.material = material();
+	// sp1.trans  = multiply_matrix(translation(1, 1, 0), scaling(1, 1, 1));
+	// sp1.material.specular = 0.5;
+	// sp1.material.diffuse = 0.7;
+	// sp1.material.color = (t_tuple){0,0,1,0};
+
+	// t_object *sp_obj = new_object(OBJ_SPHERE, (t_shapes){.sp = sp});
+	// t_object *sp1_obj = new_object(OBJ_SPHERE, (t_shapes){.sp = sp1});
+	// t_object *floor_obj = new_object(OBJ_PLANE, (t_shapes){.pl = floor});
+	// t_object *cyl_obj = new_object(OBJ_CYLINDER, (t_shapes){.cy = cyl});
+	// t_object *cyl1_obj = new_object(OBJ_CYLINDER, (t_shapes){.cy = cyl1});
+
+	// ft_add_object(&world.objects, floor_obj);
+	// ft_add_object(&world.objects, cyl_obj);
+	// ft_add_object(&world.objects, cyl1_obj);
+	// ft_add_object(&world.objects, sp_obj);
+	// ft_add_object(&world.objects, sp1_obj);
+	
+	// t_light *light = new_light((t_tuple){-10, 10, -10, 1}, (t_tuple){1, 1, 1, 0});
+	// ft_add_light(&world.lights, light);
+	// t_camera cam = camera(1920	, 1080, M_PI / 3);
+	// cam.transform = view_transformation((t_tuple){0, 1.5, -
+	// 	5, 1}, (t_tuple){0, 1, 0, 1}, (t_tuple){0, 1, 0, 0});
+		
+	// 	mlx_image_t *image = render(cam, world);
+	// 	mlx_image_to_ppm(image, "output.ppm", 255);
+	// 	// mlx_loop(mlx);
+	// return 0;
+
+
+// int main ()
+// {
+// 	// Scene configuration constants
+// 	const t_tuple LIGHT_INTENSITY = (t_tuple){1, 1, 1, 0};
+// 	const int RENDER_WIDTH = 1920;
+// 	const int RENDER_HEIGHT = 1080;
+// 	const float CAMERA_FOV = M_PI / 3;
+
+// 	// Floor plane at y=0 (horizontal, below the hexagon)
+// 	t_plane floor = plane();
+// 	floor.trans = identity();  // Plane at y=0 by default
+// 	floor.material = material();
+// 	floor.material.color = (t_tuple){0.8, 0.8, 0.8, 0};  // Light gray
+// 	floor.material.specular = 0;
+// 	floor.material.diffuse = 0.9;
+
+// 	// Hexagon walls - 6 VERTICAL planes rotated around Y axis by 60° increments
+// 	// First rotate plane to vertical (90° around X), then translate and rotate around Y
+	
+// 	// t_plane wall1 = plane();  // 0° (facing center from -Z direction)
+// 	// wall1.trans = multiply_matrix(multiply_matrix(rotation_y(0), translation(0, 0, 2)), rotation_x(M_PI / 2));
+// 	// wall1.material = material();
+// 	// wall1.material.color = (t_tuple){1, 0, 0, 0};  // Red
+// 	// wall1.material.specular = 0;
+// 	// wall1.material.diffuse = 0.9;
+
+// 	// t_plane wall2 = plane();  // 60° 
+// 	// wall2.trans = multiply_matrix(multiply_matrix(rotation_y(M_PI / 3), translation(0, 0, 2)), rotation_x(M_PI / 2));
+// 	// wall2.material = material();
+// 	// wall2.material.color = (t_tuple){0, 1, 0, 0};  // Green
+// 	// wall2.material.specular = 0;
+// 	// wall2.material.diffuse = 0.9;
+
+// 	// t_plane wall3 = plane();  // 120°
+// 	// wall3.trans = multiply_matrix(multiply_matrix(rotation_y(2 * M_PI / 3), translation(0, 0, 2)), rotation_x(M_PI / 2));
+// 	// wall3.material = material();
+// 	// wall3.material.color = (t_tuple){0, 0, 1, 0};  // Blue
+// 	// wall3.material.specular = 0;
+// 	// wall3.material.diffuse = 0.9;
+
+// 	// t_plane wall4 = plane();  // 180° (facing center from +Z direction)
+// 	// wall4.trans = multiply_matrix(multiply_matrix(rotation_y(M_PI), translation(0, 0, 2)), rotation_x(M_PI / 2));
+// 	// wall4.material = material();
+// 	// wall4.material.color = (t_tuple){1, 1, 0, 0};  // Yellow
+// 	// wall4.material.specular = 0;
+// 	// wall4.material.diffuse = 0.9;
+
+// 	// t_plane wall5 = plane();  // 240°
+// 	// wall5.trans = multiply_matrix(multiply_matrix(rotation_y(4 * M_PI / 3), translation(0, 0, 2)), rotation_x(M_PI / 2));
+// 	// wall5.material = material();
+// 	// wall5.material.color = (t_tuple){1, 0, 1, 0};  // Magenta
+// 	// wall5.material.specular = 0;
+// 	// wall5.material.diffuse = 0.9;
+
+// 	// t_plane wall6 = plane();  // 300°
+// 	// wall6.trans = multiply_matrix(multiply_matrix(rotation_y(5 * M_PI / 3), translation(0, 0, 2)), rotation_x(M_PI / 2));
+// 	// wall6.material = material();
+// 	// wall6.material.color = (t_tuple){0, 1, 1, 0};  // Cyan
+// 	// wall6.material.specular = 0;
+// 	// wall6.material.diffuse = 0.9;
+
+// 	t_world world = new_world();
+
+// 	// Sphere properties - medium size, embedded in floor
+// 	// const float SPHERE_RADIUS = 0.25;  // Medium spheres
+// 	// const float HALF_EMBEDDED = SPHERE_RADIUS * 0.5;  // Half embedded in floor
+// 	// t_tuple sphere_color = (t_tuple){1, 0.2, 0.2, 0};  // Red spheres
+	
+// 	// Letter 'A' - first letter, reading left to right
+// 	// Left leg (4 spheres going up)
+// 	// t_sphere a1 = sphere();
+// 	// a1.trans = multiply_matrix(translation(-2.2, HALF_EMBEDDED, -1.2), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// a1.material = material();
+// 	// a1.material.color = sphere_color;
+// 	// a1.material.diffuse = 0.7;
+// 	// a1.material.specular = 0.3;
+	
+// 	// t_sphere a2 = sphere();
+// 	// a2.trans = multiply_matrix(translation(-2.2, HALF_EMBEDDED, -0.8), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// a2.material = material();
+// 	// a2.material.color = sphere_color;
+// 	// a2.material.diffuse = 0.7;
+// 	// a2.material.specular = 0.3;
+	
+// 	// t_sphere a3 = sphere();
+// 	// a3.trans = multiply_matrix(translation(-2.2, HALF_EMBEDDED, -0.4), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// a3.material = material();
+// 	// a3.material.color = sphere_color;
+// 	// a3.material.diffuse = 0.7;
+// 	// a3.material.specular = 0.3;
+	
+// 	// t_sphere a4 = sphere();
+// 	// a4.trans = multiply_matrix(translation(-2.2, HALF_EMBEDDED, 0), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// a4.material = material();
+// 	// a4.material.color = sphere_color;
+// 	// a4.material.diffuse = 0.7;
+// 	// a4.material.specular = 0.3;
+	
+// 	// // Top (2 spheres)
+// 	// t_sphere a5 = sphere();
+// 	// a5.trans = multiply_matrix(translation(-2, HALF_EMBEDDED, 0.2), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// a5.material = material();
+// 	// a5.material.color = sphere_color;
+// 	// a5.material.diffuse = 0.7;
+// 	// a5.material.specular = 0.3;
+	
+// 	// t_sphere a6 = sphere();
+// 	// a6.trans = multiply_matrix(translation(-1.8, HALF_EMBEDDED, 0.2), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// a6.material = material();
+// 	// a6.material.color = sphere_color;
+// 	// a6.material.diffuse = 0.7;
+// 	// a6.material.specular = 0.3;
+	
+// 	// // Right leg (4 spheres going down)
+// 	// t_sphere a7 = sphere();
+// 	// a7.trans = multiply_matrix(translation(-1.6, HALF_EMBEDDED, 0), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// a7.material = material();
+// 	// a7.material.color = sphere_color;
+// 	// a7.material.diffuse = 0.7;
+// 	// a7.material.specular = 0.3;
+	
+// 	// t_sphere a8 = sphere();
+// 	// a8.trans = multiply_matrix(translation(-1.6, HALF_EMBEDDED, -0.4), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// a8.material = material();
+// 	// a8.material.color = sphere_color;
+// 	// a8.material.diffuse = 0.7;
+// 	// a8.material.specular = 0.3;
+	
+// 	// t_sphere a9 = sphere();
+// 	// a9.trans = multiply_matrix(translation(-1.6, HALF_EMBEDDED, -0.8), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// a9.material = material();
+// 	// a9.material.color = sphere_color;
+// 	// a9.material.diffuse = 0.7;
+// 	// a9.material.specular = 0.3;
+	
+// 	// t_sphere a10 = sphere();
+// 	// a10.trans = multiply_matrix(translation(-1.6, HALF_EMBEDDED, -1.2), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// a10.material = material();
+// 	// a10.material.color = sphere_color;
+// 	// a10.material.diffuse = 0.7;
+// 	// a10.material.specular = 0.3;
+	
+// 	// // Cross bar (1 sphere)
+// 	// t_sphere a11 = sphere();
+// 	// a11.trans = multiply_matrix(translation(-1.9, HALF_EMBEDDED, -0.6), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// a11.material = material();
+// 	// a11.material.color = sphere_color;
+// 	// a11.material.diffuse = 0.7;
+// 	// a11.material.specular = 0.3;
+	
+// 	// // Letter 'M' - wider and more defined
+// 	// // Left leg (4 spheres)
+// 	// t_sphere m1 = sphere();
+// 	// m1.trans = multiply_matrix(translation(-1.1, HALF_EMBEDDED, -1.2), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m1.material = material();
+// 	// m1.material.color = sphere_color;
+// 	// m1.material.diffuse = 0.7;
+// 	// m1.material.specular = 0.3;
+	
+// 	// t_sphere m2 = sphere();
+// 	// m2.trans = multiply_matrix(translation(-1.1, HALF_EMBEDDED, -0.8), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m2.material = material();
+// 	// m2.material.color = sphere_color;
+// 	// m2.material.diffuse = 0.7;
+// 	// m2.material.specular = 0.3;
+	
+// 	// t_sphere m3 = sphere();
+// 	// m3.trans = multiply_matrix(translation(-1.1, HALF_EMBEDDED, -0.4), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m3.material = material();
+// 	// m3.material.color = sphere_color;
+// 	// m3.material.diffuse = 0.7;
+// 	// m3.material.specular = 0.3;
+	
+// 	// t_sphere m4 = sphere();
+// 	// m4.trans = multiply_matrix(translation(-1.1, HALF_EMBEDDED, 0), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m4.material = material();
+// 	// m4.material.color = sphere_color;
+// 	// m4.material.diffuse = 0.7;
+// 	// m4.material.specular = 0.3;
+	
+// 	// // Left peak (2 spheres)
+// 	// t_sphere m5 = sphere();
+// 	// m5.trans = multiply_matrix(translation(-0.9, HALF_EMBEDDED, 0.2), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m5.material = material();
+// 	// m5.material.color = sphere_color;
+// 	// m5.material.diffuse = 0.7;
+// 	// m5.material.specular = 0.3;
+	
+// 	// t_sphere m6 = sphere();
+// 	// m6.trans = multiply_matrix(translation(-0.7, HALF_EMBEDDED, 0), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m6.material = material();
+// 	// m6.material.color = sphere_color;
+// 	// m6.material.diffuse = 0.7;
+// 	// m6.material.specular = 0.3;
+	
+// 	// // Middle valley (1 sphere)
+// 	// t_sphere m7 = sphere();
+// 	// m7.trans = multiply_matrix(translation(-0.5, HALF_EMBEDDED, -0.4), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m7.material = material();
+// 	// m7.material.color = sphere_color;
+// 	// m7.material.diffuse = 0.7;
+// 	// m7.material.specular = 0.3;
+	
+// 	// // Right peak (2 spheres)
+// 	// t_sphere m8 = sphere();
+// 	// m8.trans = multiply_matrix(translation(-0.3, HALF_EMBEDDED, 0), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m8.material = material();
+// 	// m8.material.color = sphere_color;
+// 	// m8.material.diffuse = 0.7;
+// 	// m8.material.specular = 0.3;
+	
+// 	// t_sphere m9 = sphere();
+// 	// m9.trans = multiply_matrix(translation(-0.1, HALF_EMBEDDED, 0.2), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m9.material = material();
+// 	// m9.material.color = sphere_color;
+// 	// m9.material.diffuse = 0.7;
+// 	// m9.material.specular = 0.3;
+	
+// 	// // Right leg (4 spheres)
+// 	// t_sphere m10 = sphere();
+// 	// m10.trans = multiply_matrix(translation(0.1, HALF_EMBEDDED, 0), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m10.material = material();
+// 	// m10.material.color = sphere_color;
+// 	// m10.material.diffuse = 0.7;
+// 	// m10.material.specular = 0.3;
+	
+// 	// t_sphere m11 = sphere();
+// 	// m11.trans = multiply_matrix(translation(0.1, HALF_EMBEDDED, -0.4), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m11.material = material();
+// 	// m11.material.color = sphere_color;
+// 	// m11.material.diffuse = 0.7;
+// 	// m11.material.specular = 0.3;
+	
+// 	// t_sphere m12 = sphere();
+// 	// m12.trans = multiply_matrix(translation(0.1, HALF_EMBEDDED, -0.8), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m12.material = material();
+// 	// m12.material.color = sphere_color;
+// 	// m12.material.diffuse = 0.7;
+// 	// m12.material.specular = 0.3;
+	
+// 	// t_sphere m13 = sphere();
+// 	// m13.trans = multiply_matrix(translation(0.1, HALF_EMBEDDED, -1.2), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// m13.material = material();
+// 	// m13.material.color = sphere_color;
+// 	// m13.material.diffuse = 0.7;
+// 	// m13.material.specular = 0.3;
+	
+// 	// // Letter 'N' - better diagonal definition
+// 	// // Left leg (4 spheres)
+// 	// t_sphere n1 = sphere();
+// 	// n1.trans = multiply_matrix(translation(0.6, HALF_EMBEDDED, -1.2), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n1.material = material();
+// 	// n1.material.color = sphere_color;
+// 	// n1.material.diffuse = 0.7;
+// 	// n1.material.specular = 0.3;
+	
+// 	// t_sphere n2 = sphere();
+// 	// n2.trans = multiply_matrix(translation(0.6, HALF_EMBEDDED, -0.8), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n2.material = material();
+// 	// n2.material.color = sphere_color;
+// 	// n2.material.diffuse = 0.7;
+// 	// n2.material.specular = 0.3;
+	
+// 	// t_sphere n3 = sphere();
+// 	// n3.trans = multiply_matrix(translation(0.6, HALF_EMBEDDED, -0.4), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n3.material = material();
+// 	// n3.material.color = sphere_color;
+// 	// n3.material.diffuse = 0.7;
+// 	// n3.material.specular = 0.3;
+	
+// 	// t_sphere n4 = sphere();
+// 	// n4.trans = multiply_matrix(translation(0.6, HALF_EMBEDDED, 0), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n4.material = material();
+// 	// n4.material.color = sphere_color;
+// 	// n4.material.diffuse = 0.7;
+// 	// n4.material.specular = 0.3;
+	
+// 	// // Diagonal (4 spheres for better definition)
+// 	// t_sphere n5 = sphere();
+// 	// n5.trans = multiply_matrix(translation(0.75, HALF_EMBEDDED, -0.2), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n5.material = material();
+// 	// n5.material.color = sphere_color;
+// 	// n5.material.diffuse = 0.7;
+// 	// n5.material.specular = 0.3;
+	
+// 	// t_sphere n6 = sphere();
+// 	// n6.trans = multiply_matrix(translation(0.9, HALF_EMBEDDED, -0.4), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n6.material = material();
+// 	// n6.material.color = sphere_color;
+// 	// n6.material.diffuse = 0.7;
+// 	// n6.material.specular = 0.3;
+	
+// 	// t_sphere n7 = sphere();
+// 	// n7.trans = multiply_matrix(translation(1.05, HALF_EMBEDDED, -0.6), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n7.material = material();
+// 	// n7.material.color = sphere_color;
+// 	// n7.material.diffuse = 0.7;
+// 	// n7.material.specular = 0.3;
+	
+// 	// t_sphere n8 = sphere();
+// 	// n8.trans = multiply_matrix(translation(1.2, HALF_EMBEDDED, -0.8), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n8.material = material();
+// 	// n8.material.color = sphere_color;
+// 	// n8.material.diffuse = 0.7;
+// 	// n8.material.specular = 0.3;
+	
+// 	// // Right leg (4 spheres)
+// 	// t_sphere n9 = sphere();
+// 	// n9.trans = multiply_matrix(translation(1.35, HALF_EMBEDDED, -1.2), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n9.material = material();
+// 	// n9.material.color = sphere_color;
+// 	// n9.material.diffuse = 0.7;
+// 	// n9.material.specular = 0.3;
+	
+// 	// t_sphere n10 = sphere();
+// 	// n10.trans = multiply_matrix(translation(1.35, HALF_EMBEDDED, -0.8), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n10.material = material();
+// 	// n10.material.color = sphere_color;
+// 	// n10.material.diffuse = 0.7;
+// 	// n10.material.specular = 0.3;
+	
+// 	// t_sphere n11 = sphere();
+// 	// n11.trans = multiply_matrix(translation(1.35, HALF_EMBEDDED, -0.4), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n11.material = material();
+// 	// n11.material.color = sphere_color;
+// 	// n11.material.diffuse = 0.7;
+// 	// n11.material.specular = 0.3;
+	
+// 	// t_sphere n12 = sphere();
+// 	// n12.trans = multiply_matrix(translation(1.35, HALF_EMBEDDED, 0), scaling(SPHERE_RADIUS, SPHERE_RADIUS, SPHERE_RADIUS));
+// 	// n12.material = material();
+// 	// n12.material.color = sphere_color;
+// 	// n12.material.diffuse = 0.7;
+// 	// n12.material.specular = 0.3;
+	
+// 	// // Add all objects to world
+// 	// ft_add_object(&(world.objects), new_object(OBJ_PLANE, (t_shapes)floor));
+	
+// 	// // Add letter A
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)a1));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)a2));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)a3));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)a4));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)a5));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)a6));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)a7));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)a8));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)a9));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)a10));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)a11));
+	
+// 	// // Add letter M
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m1));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m2));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m3));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m4));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m5));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m6));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m7));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m8));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m9));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m10));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m11));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m12));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)m13));
+	
+// 	// // Add letter N
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n1));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n2));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n3));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n4));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n5));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n6));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n7));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n8));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n9));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n10));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n11));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)n12));
+
+// 	// Create the floor plane at y=0 (horizontal floor)
+// 	// t_plane floor = plane();
+// 	// floor.trans = identity();  // No transformation needed, plane is already horizontal at y=0
+// 	// floor.material = material();
+// 	// floor.material.color = (t_tuple){1, 1, 1, 0};  // Light gray floor
+// 	// floor.material.specular = 0;
+// 	// floor.material.diffuse = 0.9;
+	
+// 	// Create middle sphere (largest)
+// 	// t_sphere middle = sphere();
+// 	// middle.trans = translation(0, 1, 0);  // Sits on floor (radius 1, center at y=1)
+// 	// middle.material = material();
+// 	// middle.material.color = (t_tuple){0, 0, 1, 0};  // Blue
+// 	// middle.material.diffuse = 0.7;
+// 	// middle.material.specular = 0.3;
+
+// 	// Create right sphere (medium)
+// 	// t_sphere right = sphere();
+// 	// right.trans = multiply_matrix(translation(1.5, 0.5, 0), scaling(0.5, 0.5, 0.5));
+// 	// right.material = material();
+// 	// right.material.color = (t_tuple){0, 1, 0, 0};  // Green
+// 	// right.material.diffuse = 0.7;
+// 	// right.material.specular = 0.3;
+
+// 	// Create left sphere (smallest)
+// 	// t_sphere left = sphere();
+// 	// left.trans = multiply_matrix(translation(-2, 0.33, 0), scaling(0.33, 0.33, 0.33));
+// 	// left.material = material();
+// 	// left.material.color = (t_tuple){1, 0, 0, 0};  // Red
+// 	// left.material.diffuse = 0.7;
+// 	// left.material.specular = 0.3;
+
+// 	// Create the world and add objects
+// 	// ft_add_object(&(world.objects), new_object(OBJ_PLANE, (t_shapes)floor));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)middle));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)right));
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)left));
+
+
+// 	// Add floor to world
+// 	ft_add_object(&(world.objects), new_object(OBJ_PLANE, (t_shapes)floor));
+
+
+// 	// Add two light sources
+// 	// Light from the side (left and above)
+// 	ft_add_light(&(world.lights), new_light((t_tuple){0, 10, 0, 1}, LIGHT_INTENSITY));
+// 	// Light from the front (centered and above)
+// 	// ft_add_light(&(world.lights), new_light((t_tuple){0, 10, -10, 1}, LIGHT_INTENSITY));
+
+// 	// Setup camera - positioned ABOVE looking DOWN at the hexagonal room
+// 	t_camera cam = camera(RENDER_WIDTH, RENDER_HEIGHT, CAMERA_FOV);
+// 	t_tuple from = (t_tuple){0, 10, 0, 1};    // Camera directly above the hexagon
+// 	t_tuple to = (t_tuple){0, 0, 0, 1};      // Look down at the center (floor level)
+// 	t_tuple up = (t_tuple){0, 0, -1, 0};     // Up vector points toward -Z to orient view
+// 	cam.transform = view_transformation(from, to, up);
+	
+// 	// Render the scene
+// 	mlx_image_t *image = render(cam, world);
+// 	mlx_image_to_ppm(image, "output.ppm", 255);
+	
+// 	printf("Scene rendered successfully to output.ppm\n");
+// 	printf("Scene contains:\n");
+// 	printf("  - Floor plane at y=0\n");
+// 	printf("  - Middle sphere (blue, radius 1.0) at (0, 1, 0)\n");
+// 	printf("  - Right sphere (green, radius 0.5) at (2, 0.5, 0)\n");
+// 	printf("  - Left sphere (red, radius 0.33) at (-2, 0.33, 0)\n");
+// 	printf("  - Light source from side at (-10, 10, -10)\n");
+// 	printf("  - Light source from front at (0, 10, -10)\n");
+// 	printf("  - Shadow acne prevention using over_point with EPSILON offset\n");
+	
+// 	return 0;
+// }
+
+// int main ()
+// {
+// 	// Create default_world as per specification
+// 	t_world world = new_world();
+	
+// 	// Light at point(-10, 10, -10) with color(1, 1, 1)
+// 	ft_add_light(&(world.lights), new_light((t_tuple){-10, 10, -10, 1}, (t_tuple){1, 1, 1, 0}));
+	
+// 	// First sphere (s1): material.color = (0.8, 1.0, 0.6), diffuse = 0.7, specular = 0.2
+// 	t_sphere s1 = sphere();
+// 	s1.material.color = (t_tuple){1, 0, 0, 0};
+// 	s1.material.diffuse = 0.7;
+// 	s1.material.specular = 0.2;
+// 	ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)s1));
+	
+// 	// Second sphere (s2): scaled by 0.5
+// 	// t_sphere s2 = sphere();
+// 	// s2.trans = scaling(0.5, 0.5, 0.5);
+// 	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)s2));
+	
+// 	// Camera setup as per specification: 11x11, FOV = π/2
+// 	t_camera cam = camera(1920, 1080, M_PI / 2);
+// 	t_tuple from = (t_tuple){0, 0, -5, 1};  // point(0, 0, -5)
+// 	t_tuple to = (t_tuple){0, 0, 0, 1};     // point(0, 0, 0)
+// 	t_tuple up = (t_tuple){0, 1, 0, 0};     // vector(0, 1, 0)
+// 	cam.transform = view_transformation(from, to, up);
+	
+// 	// Render and test pixel(5, 5)
+// 	mlx_image_t *image = render(cam, world);
+// 	mlx_image_to_ppm(image, "output.ppm", 255);
+	
+// 	// Test: pixel_at(image, 5, 5) should be color(0.38066, 0.47583, 0.2855)
+// 	t_tuple pixel_color = color_at(world, ray_for_pixel(cam, 5, 5));
+// 	printf("pixel_at(5, 5) = color(%.5f, %.5f, %.5f)\n", pixel_color.x, pixel_color.y, pixel_color.z);
+// 	printf("Expected:       color(0.38066, 0.47583, 0.2855)\n");
+// }
+	// printf("pixel_at (5,5): {x: %f, y: %f, z: %f}\n", color_at(world, ray_for_pixel(cam, 5, 5)).x,
+	// 										   color_at(world, ray_for_pixel(cam, 5, 5)).y,
+	// 										   color_at(world, ray_for_pixel(cam, 5, 5)).z);
+	// t_camera cam = camera(201, 101, M_PI / 2);
+	// t_ray ray = ray_for_pixel(cam, 100, 50);
+	// printf("Ray origin: %.2f, %.2f, %.2f, %.2f\n", ray.origin.x, ray.origin.y, ray.origin.z, ray.origin.w);
+	// printf("Ray direction: %.2f, %.2f, %.2f, %.2f\n", ray.direction.x, ray.direction.y, ray.direction.z, ray.direction.w);
+	
+	// t_camera cam = camera(201, 101, M_PI / 2);
+	// t_ray ray = ray_for_pixel(cam, 0, 0);
+	// printf("Ray origin: %.2f, %.2f, %.2f, %.2f\n", ray.origin.x, ray.origin.y, ray.origin.z, ray.origin.w);
+	// printf("Ray direction: %.2f, %.2f, %.2f, %.2f\n", ray.direction.x, ray.direction.y, ray.direction.z, ray.direction.w);
+	
+	// t_camera cam = camera(201, 101, M_PI / 2);
+	// cam.transform = multiply_matrix(rotation_y(M_PI / 4), translation(0, -2, 5));
+	// t_ray ray = ray_for_pixel(cam, 100, 50);
+	// printf("Ray origin: %.2f, %.2f, %.2f, %.2f\n", ray.origin.x, ray.origin.y, ray.origin.z, ray.origin.w);
+	// printf("Ray direction: %.2f, %.2f, %.2f, %.2f\n", ray.direction.x, ray.direction.y, ray.direction.z, ray.direction.w);
+	
+
+
+	// t_camera cam2 = camera(125, 200, M_PI / 2);
+	// printf("Camera2 pixel size: %f\n", cam2.pixel_size);
+	// t_tuple from = (t_tuple){1, 3, 2, 1};//
+	// t_tuple to = (t_tuple){4, -2, 8, 1};//
+	// t_tuple up = (t_tuple){1, 1, 0, 0};
+
+	// t_matrix view = view_transformation(from, to, up);
+	// printf("View Transformation Matrix:\n");
+	// //draw matrix
+	// for (int i = 0; i < view.size; i++)
+	// {
+	// 	for (int j = 0; j < view.size; j++)
+	// 	{
+	// 		printf("%f ", view.mtrx[i][j]);
+	// 	}
+	// 	printf("\n");
+	// }
+
+	// t_matrix scl = translation(0, 0, -8);
+	// scl.size = 4;
+	// printf("Scaling Matrix:\n");
+	// for (int i = 0; i < scl.size; i++)
+	// {
+	// 	for (int j = 0; j < scl.size; j++)
+	// 	{
+	// 		printf("%.2f ", scl.mtrx[i][j]);
+	// 	}
+	// 	printf("\n");
+	// }
+// int main ()
+// {
+// 	t_world world = new_world();
+	
+// 	// Create sphere with material
+// 	t_sphere outer = sphere();
+// 	outer.material.color = (t_tuple){0, 1, 0, 0}; // Green (normalized 0-1)
+// 	outer.material.ambient = 1;
+// 	outer.material.diffuse = 0.7;
+// 	outer.material.specular = 0.2;
+// 	outer.material.shininess = 200.0;
+	
+// 	t_sphere inner = sphere();
+// 	inner.trans = scaling(0.5, 0.5, 0.5); // Scale to make it smaller/inner
+// 	inner.material.color = (t_tuple){1, 0, 0, 0}; // Red (normalized 0-1)
+// 	inner.material.ambient = 1;
+// 	inner.material.diffuse = 0.7;
+// 	inner.material.specular = 0.2;
+// 	inner.material.shininess = 200.0;
+// 	// Add objects and lights to world
+// 	ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)outer));
+// 	ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)inner));
+// 	ft_add_light(&(world.lights), new_light((t_tuple){-10, 10, -10, 1}, (t_tuple){1, 1, 1, 0}));
+	
+// 	t_ray ray = {(t_tuple){0, 0, 0.75, 1}, (t_tuple){0, 0, -1, 0}};
+// 	t_tuple color = color_at(world, ray);
+// 	printf("color: {%f, %f, %f, %f}\n", color.x, color.y, color.z, color.w);
+	
+// 	return 0;
+// }
+
+// int main()
+// {
+// 	t_world world = new_world();
+// 	t_sphere sp = sphere();
+// 	sp.material.color = (t_tuple){0.8, 1.0, 0.6, 0};
+// 	sp.material.ambient = 0.1;
+// 	sp.material.diffuse = 0.7;
+// 	sp.material.specular = 0.2;
+// 	sp.material.shininess = 200.0;
+// 	// t_sphere sp1 = sphere();
+// 	// sp1.material.color = (t_tuple){0.8, 1.0, 0.6, 0};
+// 	// sp1.material.ambient = 0.1;
+// 	// sp1.material.diffuse = 0.7;
+// 	// sp1.material.specular = 0.2;
+// 	// sp1.material.shininess = 200.0;
+
+// 	t_ray ray = {(t_tuple){0, 0, 0, 1}, (t_tuple){0, 0, 1, 0}};
+// 	t_light light = {(t_tuple){0, 0.25, 0, 1}, (t_tuple){1, 1, 1, 0}, NULL};
+// 	world.lights = &light;
+
+// 	t_inters *intersections = NULL;
+// 	intersect(&sp, ray, &intersections);
+// 	if (!intersections)
+// 	{
+// 		printf("No intersections\n");
+// 		return 1;
+// 	}
+	
+// 	// intersect(&sp1, ray, &intersections);
+// 	// if (!intersections)
+// 	// {
+// 	// 	printf("No intersections\n");
+// 	// 	return 1;
+// 	// }
+// 	float hit_t = hit(intersections);
+// 	t_inters *hit_i = intersections;
+// 	while (hit_i && !f_equal(hit_i->t, hit_t))
+// 		hit_i = hit_i->next;
+	
+// 	t_comps *comp = prepare_computations(intersections, ray);
+// 	t_tuple color = shade_hit(world, comp);
+// 	printf("color: {%f, %f, %f, %f}\n", color.x, color.y, color.z, color.w);
+// 	// printf("point: {%f, %f, %f, %f}\n", comp->point.x, comp->point.y, comp->point.z, comp->point.w);
+// 	// printf("eyev: {%f, %f, %f, %f}\n", comp->eyev.x, comp->eyev.y, comp->eyev.z, comp->eyev.w);
+// 	// printf("normalv: {%f, %f, %f, %f}\n", comp->normalv.x, comp->normalv.y, comp->normalv.z, comp->normalv.w);
+// 	// printf("%s\n", comp->inside ? "true" : "false");
+// 	// t_sphere sp1 = sphere();
+// 	// t_inters *intersections = NULL;
+// 	// intersect(&sp1, ray1, &intersections);
+// 	// t_comps *comps = prepare_computations(intersections, ray1);
+// 	// printf("inside: %s\n", comps->inside ? "true": "false");
+// 	// printf("comps.point: {%f, %f, %f, %f}\n", comps->point.x, comps->point.y,comps->point.z, comps->point.w);
+
+// 	// printf("comps.eyev: {%f, %f, %f, %f}\n", comps->eyev.x, comps->eyev.y,comps->eyev.z, comps->eyev.w);	
+// 	// printf("comps.normalv: {%f, %f, %f, %f}\n", comps->normalv.x, comps->normalv.y,comps->normalv.z, comps->normalv.w);
+
+// 	// printf("%f\n", hit(intersections));
+// }
+// int main(void)
+// {
+// 	printf("Starting ray tracer...\n");
+// 	mlx_t *ptr = mlx_init(800, 800, "red sphere", false);
+// 	if (!ptr)
+// 	{
+// 		printf("Failed to initialize MLX\n");
+// 		return -1;
+// 	}
+	
+// 	mlx_image_t *img = mlx_new_image(ptr, 800, 800);
+// 	if (!img)
+// 	{
+// 		printf("Failed to create image\n");
+// 		return -1;
+// 	}
+	
+// 	printf("MLX initialized successfully\n");
+
+// 	t_sphere s1 = sphere();
+	// s1.material.color = (t_tuple){0.8, 1, 0.6, 0};
+	// s1.material.diffuse = 0.7;
+	// s1.material.specular = 0.2;
+	// t_sphere s2 = sphere();
+	// s2.trans = scaling(0.5,0.5,0.5);
+	// t_light light = point_light((t_tuple){-10, 10, -10, 1}, (t_tuple){1, 1, 1, 1});
+	// t_world world = new_world();
+	
+	// ft_add_light(&(world.lights), new_light((t_tuple){-10, 10, -10, 1}, (t_tuple){1, 1, 1, 1}));
+	
+	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)s1));
+	// ft_add_object(&(world.objects), new_object(OBJ_SPHERE, (t_shapes)s2));
+	// t_inters *inters = intersect_world(world, (t_ray){(t_tuple){0,0,-5,1}, (t_tuple){0,0,1,0}});
+	// for(t_inters *ptr = inters; ptr != NULL; ptr = ptr->next)
+	// {
+		// 	printf("%f\n", ptr->t);
+		// }
+// 		t_ray ray = (t_ray){(t_tuple){0,0,-5,1}, (t_tuple){0,0,1,0}};
+// 		t_inters *inters = NULL;
+// 		// puts("here");
+// 		intersect(&s1,ray,&inters); 
+// 		t_comps *comp = prepare_computations(inters, ray);
+		
+// 		printf("%f\n",comp->t);
+
+// 		printf("%i\n",comp->obj->type);
+// 		printf("%f %f %f\n", comp->point.x, comp->point.y, comp->point.z);
+// 	printf("%f %f %f\n", comp->eyev.x, comp->eyev.y, comp->eyev.z);
+// 	printf("%f %f %f\n", comp->normalv.x, comp->normalv.y, comp->normalv.z);
+// 		printf("%d\n",comp->inside);
+
+
+// }
+	// // Create two spheres
+	// t_sphere red_sphere = sphere();
+	// red_sphere.material.color = (t_tuple){1, 0, 0, 0};  // Red sphere
+	// red_sphere.material.diffuse = 0.7;
+	// red_sphere.material.specular = 0.2;
+	// // red_sphere.trans = translation(-2, 2, 0);  // Upper left position
+	
+	// t_sphere blue_sphere = sphere();
+	// blue_sphere.material.color = (t_tuple){0, 0, 1, 0};  // Blue sphere
+	// blue_sphere.material.diffuse = 0.7;
+	// blue_sphere.material.specular = 0.4;
+	// t_sphere red_sphere = sphere();
+	// blue_sphere.material.color = (t_tuple){1, 0, 0, 0};  // Blue sphere
+	// blue_sphere.material.diffuse = 0.7;
+	// blue_sphere.material.specular = 0.4;
+
+	// t_object *obj_lst;
+	// ft_add_object(&obj_lst, new_object(OBJ_SPHERE, (t_shapes)blue_sphere));
+	// ft_add_object(&obj_lst, new_object(OBJ_SPHERE, (t_shapes)red_sphere));
+
+	// t_light *lt_lst;
+	// ft_add_light(&lt_lst, new_light((t_tuple){-5, 1, -5, 1}, (t_tuple){1, 1, 1, 1}));
+	// ft_add_light(&lt_lst, new_light((t_tuple){5, 1, 5, 1}, (t_tuple){1, 1, 1, 1}));
+
+	// // blue_sphere.trans = translation(2, -2, 0);  // Lower right position
+
+	// t_light light = point_light((t_tuple){-5, 1, -5, 1}, (t_tuple){1, 1, 1, 1});
+	
+	// // Camera setup - corrected coordinates
+	// t_tuple camera_pos = (t_tuple){0, 0, -4, 1};
+	// float wall_z = 0.0;  // Wall at z=0, camera at z=-5
+	// float wall_size = 7.0;
+	// float pixel_size = wall_size / 800.0;
+	// float half = wall_size / 2.0;
+
+	// // intersect_world(world, t_ray ray);
+	// for (int y = 0; y < 800; y++)
+	// {
+	// 	for (int x = 0; x < 800; x++)  
+	// 	{
+	// 		// Convert screen coordinates to world coordinates
+	// 		float world_x = -half + pixel_size * x;
+	// 		float world_y = half - pixel_size * y;
+			
+	// 		// Point on the wall in front of the camera
+	// 		t_tuple target = (t_tuple){world_x, world_y, wall_z, 1};
+			
+	// 		// Ray from camera to the target point
+	// 		t_tuple direction = normalizing_vector(substract_tuple(target, camera_pos));
+	// 		t_ray ray1 = {camera_pos, direction};
+			
+	// 		t_inters *intersections = NULL;
+	// 		t_tuple final_color = (t_tuple){0, 0, 0, 0};  // Black background
+	// 		float closest_t = INFINITY;
+	// 		bool hit_something = false;
+	// 		// t_comps * comp = prepare_computations();
+	// 		t_ray blue_ray = transform_ray(ray1, inverse_matrix(blue_sphere.trans));
+
+
+	// 		// intersections = intersect_world(world, blue_ray);
+
+
+			// if (intersect(&blue_sphere, blue_ray, &intersections) && intersections)
+	// 		{
+	// 			float t = hit(intersections);
+	// 			if (t > 0 && t < closest_t)  // Valid hit and closer
+	// 			{
+	// 				closest_t = t;
+	// 				t_tuple point = position(ray1, t);
+	// 				final_color = lighting(blue_sphere.material, light, point, 
+	// 									  negate_tuple(ray1.direction), normal_at(blue_sphere, point));
+	// 				hit_something = true;
+	// 			}
+	// 		}
+			
+	// 		if (hit_something)
+	// 		{
+	// 			uint32_t c = convert_color(final_color);
+	// 			mlx_put_pixel(img, x, y, c);
+	// 		}
+	// 		// Clean up intersections for this pixel
+	// 		t_inters *current = intersections;
+	// 		while (current)
+	// 		{
+	// 			t_inters *temp = current;
+	// 			current = current->next;
+	// 			if (temp->object)
+	// 				free(temp->object);
+			
+	// 			free(temp);
+	// 		}
+	// 	}
+	// }
+	
+	// printf("Rendering complete, displaying image...\n");
+	// mlx_image_to_window(ptr, img, 0, 0);
+	// mlx_loop(ptr);    
+// 	return 0;
+// }
+
+
+
+// int main(void)
+// {
+// 	// Test both normal_at directly and through intersection
+// 	t_sphere sp1 = sphere();
+// 	printf("Created sphere with center: (%.1f, %.1f, %.1f, %.1f)\n", 
+// 		   sp1.center.x, sp1.center.y, sp1.center.z, sp1.center.w);
+	
+// 	// Test 1: Normal calculation directly
+// 	printf("\n=== Test 1: Direct normal calculation ===\n");
+// 	t_tuple test_point = (t_tuple){0, 0, -1, 1};
+// 	printf("Testing normal at point: (%.1f, %.1f, %.1f, %.1f)\n", 
+// 		   test_point.x, test_point.y, test_point.z, test_point.w);
+	
+// 	t_tuple normal = normal_at(sp1, test_point);
+// 	printf("Result normal: (%.1f, %.1f, %.1f, %.1f)\n", 
+// 		   normal.x, normal.y, normal.z, normal.w);
+// 	printf("Expected normal: (0, 0, -1, 0)\n");
+	
+// 	// Test 2: Normal calculation through intersection
+// 	printf("\n=== Test 2: Normal through intersection ===\n");
+// 	t_ray ray = {(t_tuple){0, 0, -5, 1}, (t_tuple){0, 0, 1, 0}};
+// 	t_inters *inters = NULL;
+	
+// 	if (intersect(&sp1, ray, &inters) && inters != NULL)
+// 	{
+// 		printf("Found intersection at t=%.2f\n", inters->t);
+		
+// 		t_comps *comps = prepare_computations(inters, ray);
+// 		if (comps)
+// 		{
+// 			printf("comps.point   {%.1f, %.1f, %.1f, %.1f}\n", comps->point.x, comps->point.y, comps->point.z, comps->point.w);
+// 			printf("comps.normalv {%.1f, %.1f, %.1f, %.1f}\n", comps->normalv.x, comps->normalv.y, comps->normalv.z, comps->normalv.w);
+// 			printf("comps.inside ? %s\n", comps->inside ? "true" : "false");
+// 			free(comps);
+// 		}
+// 	}
+// 	else
+// 	{
+// 		printf("No intersections found\n");
+// 	}
+	
+// 	return 0;
+// }
+
+

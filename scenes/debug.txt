@@ -1,0 +1,6 @@
+libdecor-gtk-WARNING: Failed to initialize GTK
+Failed to load plugin 'libdecor-gtk.so': failed to init
+No plugins found, falling back on no decorations
+Pixel (5, 5): Color R:97 G:121 B:72
+pixel_at(5, 5) = color(0.38066, 0.47583, 0.28550)
+Expected:       color(0.38066, 0.47583, 0.2855)

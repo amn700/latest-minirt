@@ -1,0 +1,127 @@
+# # **************************************************************************** #
+# #                                                                              #
+# #                                                         :::      ::::::::    #
+# #    Makefile_new                                       :+:      :+:    :+:    #
+# #                                                     +:+ +:+         +:+      #
+# #    By: amn <amn@student.42.fr>                    +#+  +:+       +#+         #
+# #                                                 +#+#+#+#+#+   +#+            #
+# #    Created: 2025/12/02 00:00:00 by amn               #+#    #+#              #
+# #    Updated: 2025/12/02 22:48:42 by amn              ###   ########.fr        #
+# #                                                                              #
+# # **************************************************************************** #
+
+# NAME = miniRT
+# CC = gcc
+# CFLAGS = -Wall -Wextra -Werror -g
+# MATH_FLAGS = -lm
+# MLX_FLAGS = -ldl -lglfw -pthread -lX11 -lGL -lrt -lXrandr -lXinerama -lXcursor -lXi -lXxf86vm
+
+# SRC_DIR = src
+# OBJ_DIR = obj
+# INC_DIR = includes
+# LIBFT_DIR = ../libft
+# GNL_DIR = ../get_next_line
+# MLX42_DIR = ../MLX42
+
+# INCLUDES = -I$(INC_DIR) -I$(LIBFT_DIR) -I$(GNL_DIR) -I$(MLX42_DIR)/include
+
+# SRCS = $(SRC_DIR)/main.c \
+# 	   $(SRC_DIR)/core/world.c \
+# 	   $(SRC_DIR)/core/intersections.c \
+# 	   $(SRC_DIR)/core/computations.c \
+# 	   $(SRC_DIR)/core/camera.c \
+# 	   $(SRC_DIR)/core/view_transform.c \
+# 	   $(SRC_DIR)/core/shading.c \
+# 	   $(SRC_DIR)/core/ray_casting.c \
+# 	   $(SRC_DIR)/geometry/sphere.c \
+# 	   $(SRC_DIR)/geometry/sphere_intersect.c \
+# 	   $(SRC_DIR)/geometry/plane.c \
+# 	   $(SRC_DIR)/geometry/cylinder.c \
+# 	   $(SRC_DIR)/geometry/cylinder_intersect.c \
+# 	   $(SRC_DIR)/geometry/intersections_utils.c \
+# 	   $(SRC_DIR)/geometry/ray_utils.c \
+# 	   $(SRC_DIR)/math/tuple_basic.c \
+# 	   $(SRC_DIR)/math/tuple_arithmetic.c \
+# 	   $(SRC_DIR)/math/vector_basic.c \
+# 	   $(SRC_DIR)/math/vector_advanced.c \
+# 	   $(SRC_DIR)/math/matrix_basic.c \
+# 	   $(SRC_DIR)/math/matrix_multiply.c \
+# 	   $(SRC_DIR)/math/matrix_determinant.c \
+# 	   $(SRC_DIR)/math/matrix_submatrix.c \
+# 	   $(SRC_DIR)/math/matrix_inverse.c \
+# 	   $(SRC_DIR)/math/transformations_basic.c \
+# 	   $(SRC_DIR)/math/transformations_rotation.c \
+# 	   $(SRC_DIR)/math/transformations_shearing.c \
+# 	   $(SRC_DIR)/lighting/phong_lighting.c \
+# 	   $(SRC_DIR)/rendering/progress_bar.c \
+# 	   $(SRC_DIR)/rendering/render.c \
+# 	   $(SRC_DIR)/rendering/image_export.c \
+# 	   $(SRC_DIR)/rendering/color_conversion.c \
+# 	   $(SRC_DIR)/parsing/parsing.c \
+# 	   $(SRC_DIR)/parsing/validators.c \
+# 	   $(SRC_DIR)/parsing/field_parsers.c \
+# 	   $(SRC_DIR)/parsing/scene_extractors.c \
+# 	   $(SRC_DIR)/parsing/ambient_camera_extract.c \
+# 	   $(SRC_DIR)/parsing/light_extract.c \
+# 	   $(SRC_DIR)/parsing/sphere_extract.c \
+# 	   $(SRC_DIR)/parsing/plane_extract.c \
+# 	   $(SRC_DIR)/parsing/cylinder_extract.c \
+# 	   $(SRC_DIR)/parsing/apply_ambient.c \
+# 	   $(SRC_DIR)/parsing/split.c \
+# 	   $(SRC_DIR)/parsing/debug_parsing.c
+
+# GNL_SRCS = $(GNL_DIR)/get_next_line.c \
+# 		   $(GNL_DIR)/get_next_line_utils.c
+
+# OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+# GNL_OBJS = $(GNL_SRCS:$(GNL_DIR)/%.c=$(OBJ_DIR)/%.o)
+
+# LIBFT = $(LIBFT_DIR)/libft.a
+# MLX42 = ../MLX42/build/libmlx42.a
+
+# GREEN = \033[0;32m
+# RED = \033[0;31m
+# YELLOW = \033[1;33m
+# NC = \033[0m
+
+# .PHONY: all clean fclean re
+
+# all: $(LIBFT) $(NAME)
+
+# $(OBJ_DIR):
+# 	@mkdir -p $(OBJ_DIR)
+# 	@mkdir -p $(OBJ_DIR)/core
+# 	@mkdir -p $(OBJ_DIR)/geometry
+# 	@mkdir -p $(OBJ_DIR)/math
+# 	@mkdir -p $(OBJ_DIR)/lighting
+# 	@mkdir -p $(OBJ_DIR)/rendering
+# 	@mkdir -p $(OBJ_DIR)/parsing
+
+# $(LIBFT):
+# 	@echo "$(YELLOW)Building libft...$(NC)"
+# 	@$(MAKE) -C $(LIBFT_DIR)
+
+# $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+# 	@echo "$(GREEN)Compiling $<$(NC)"
+# 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# $(OBJ_DIR)/%.o: $(GNL_DIR)/%.c | $(OBJ_DIR)
+# 	@echo "$(GREEN)Compiling $<$(NC)"
+# 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# $(NAME): $(OBJS) $(GNL_OBJS) $(LIBFT)
+# 	@echo "$(YELLOW)Linking $(NAME)...$(NC)"
+# 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(GNL_OBJS) $(LIBFT) $(MLX42) $(MLX_FLAGS) $(MATH_FLAGS)
+# 	@echo "$(GREEN)$(NAME) compiled successfully!$(NC)"
+
+# clean:
+# 	@echo "$(RED)Cleaning object files...$(NC)"
+# 	@rm -rf $(OBJ_DIR)
+# 	@$(MAKE) -C $(LIBFT_DIR) clean
+
+# fclean: clean
+# 	@echo "$(RED)Full clean...$(NC)"
+# 	@rm -rf $(NAME)
+# 	@$(MAKE) -C $(LIBFT_DIR) fclean
+
+# re: fclean all
