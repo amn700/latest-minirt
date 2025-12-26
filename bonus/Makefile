@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mac <mac@student.42.fr>                    +#+  +:+       +#+         #
+#    By: mohchaib <mohchaib@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/01 00:00:00 by amn700            #+#    #+#              #
-#    Updated: 2025/12/22 21:47:05 by mac              ###   ########.fr        #
+#    Updated: 2025/12/25 15:45:38 by mohchaib         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 MATH_FLAGS = -lm
 
 # macOS MLX42 flags for M1
-MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -lglfw
+MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -L/goinfre/mohchaib/homebrew/lib -lglfw -pthread -ldl
 # Linux MLX42 flags (uncomment for Linux)
 # MLX_FLAGS = -ldl -lglfw -pthread -lX11 -lGL -lrt -lXrandr -lXinerama -lXcursor -lXi -lXxf86vm
 # Directories

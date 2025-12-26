@@ -9,13 +9,13 @@ pl 0,0,0 0,1,0 255,255,255 ref:1
 sp -3,1.5,0 3.0 255,0,0 ref:0
 
 # Polished blue sphere (60% reflective)
-sp 0,1.5,0 3.0 0,0,255 ref:0
+sp 0,1.5,0 3.0 0,0,255 ref:0.5
 
 # Mirror sphere (90% reflective)
 sp 3,1.5,0 3.0 200,200,200 ref:0
 
 # Reflective cylinder (50% reflective)
-cy -5,2,-3 0,1,0 1.5 4.0 0,255,0 ref:0
+cy -5,2,-3 0,1,0 1.5 4.0 1 0,255,0 ref:0.5
 
 # Matte cylinder (no reflection parameter = default 0.0)
-cy 5,2,-3 0,1,0 1.5 4.0 255,128,0 ref:0
+cy 5,2,-3 0,1,0 1.5 4.0 0 255,128,0 ref:0

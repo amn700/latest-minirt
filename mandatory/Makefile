@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mac <mac@student.42.fr>                    +#+  +:+       +#+         #
+#    By: mohchaib <mohchaib@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/01 00:00:00 by amn700            #+#    #+#              #
-#    Updated: 2025/12/24 03:46:12 by mac              ###   ########.fr        #
+#    Updated: 2025/12/26 15:07:11 by mohchaib         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,8 +18,10 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 # Math library flag
 MATH_FLAGS = -lm
-# macOS MLX42 flags for M1
-MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -lglfw
+# Try this instead:
+MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -L/goinfre/mohchaib/homebrew/lib -lglfw -pthread -ldl
+# macOS MLX42 flags
+# MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -Iinclude -L/goinfre/mohchaib/homebrew/opt -lglfw -pthread -ldl 
 # Linux MLX42 flags (uncomment for Linux)
 # MLX_FLAGS = -ldl -lglfw -pthread -lX11 -lGL -lrt -lXrandr -lXinerama -lXcursor -lXi -lXxf86vm
 # Directories

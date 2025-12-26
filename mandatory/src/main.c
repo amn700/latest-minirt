@@ -6,7 +6,7 @@
 /*   By: mohchaib <mohchaib@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/07 07:38:05 by mohchaib         ###   ########.fr       */
+/*   Updated: 2025/12/25 15:45:13 by mohchaib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,10 +86,7 @@ int	main(int argc, char **argv)
 
 	data = (t_data){};
 	if (argc != 2)
-	{
-		printf("❌ Usage: %s <scene_file.rt>\n", argv[0]);
-		return (1);
-	}
+		return (printf("❌ Usage: %s <scene_file.rt>\n", argv[0]), 1);
 	if (!complete_parsing(argv[1], &data))
 		return (1);
 	printf("\n✅ Parsing completed successfully!\n");
