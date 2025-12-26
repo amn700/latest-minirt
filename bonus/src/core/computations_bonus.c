@@ -44,6 +44,54 @@ static void	get_normal_vector(t_comps *new)
 		new->normalv = cone_normal_at(new->obj->shape.co, new->point);
 }
 
+static void	apply_texture_mapping(t_comps *new)
+{
+	t_material	material;
+	t_tuple		local_point;
+	t_matrix	inverse;
+
+	if (new->obj->type == OBJ_SPHERE)
+	{
+		material = new->obj->shape.sp.material;
+		inverse = inverse_matrix(new->obj->shape.sp.trans);
+		local_point = multiply_matrix_by_tuple(inverse, new->point);
+		if (material.has_normal_map)
+			new->normalv = apply_normal_map(material, new->normalv, local_point, OBJ_SPHERE);
+		else if (material.has_bump_map)
+			new->normalv = perturb_normal_with_bump(material, new->normalv, local_point, OBJ_SPHERE);
+	}
+	else if (new->obj->type == OBJ_PLANE)
+	{
+		material = new->obj->shape.pl.material;
+		inverse = inverse_matrix(new->obj->shape.pl.trans);
+		local_point = multiply_matrix_by_tuple(inverse, new->point);
+		if (material.has_normal_map)
+			new->normalv = apply_normal_map(material, new->normalv, local_point, OBJ_PLANE);
+		else if (material.has_bump_map)
+			new->normalv = perturb_normal_with_bump(material, new->normalv, local_point, OBJ_PLANE);
+	}
+	else if (new->obj->type == OBJ_CYLINDER)
+	{
+		material = new->obj->shape.cy.material;
+		inverse = inverse_matrix(new->obj->shape.cy.trans);
+		local_point = multiply_matrix_by_tuple(inverse, new->point);
+		if (material.has_normal_map)
+			new->normalv = apply_normal_map(material, new->normalv, local_point, OBJ_CYLINDER);
+		else if (material.has_bump_map)
+			new->normalv = perturb_normal_with_bump(material, new->normalv, local_point, OBJ_CYLINDER);
+	}
+	else if (new->obj->type == OBJ_CONE)
+	{
+		material = new->obj->shape.co.material;
+		inverse = inverse_matrix(new->obj->shape.co.trans);
+		local_point = multiply_matrix_by_tuple(inverse, new->point);
+		if (material.has_normal_map)
+			new->normalv = apply_normal_map(material, new->normalv, local_point, OBJ_CONE);
+		else if (material.has_bump_map)
+			new->normalv = perturb_normal_with_bump(material, new->normalv, local_point, OBJ_CONE);
+	}
+}
+
 t_comps	*prepare_computations(t_inters *intersection, t_ray ray, t_inters *intersections)
 {
 	t_comps	*new;
@@ -57,6 +105,7 @@ t_comps	*prepare_computations(t_inters *intersection, t_ray ray, t_inters *inter
 	new->point = position(ray, new->t);
 	new->eyev = negate_tuple(ray.direction);
 	get_normal_vector(new);
+	apply_texture_mapping(new);
 	original_normal = new->normalv;
 	if (vecs_dot_product(new->normalv, new->eyev) < 0)
 	{

@@ -1,0 +1,12 @@
+A 0.2 255,255,255
+C 0,5,-15 0,0,1 70
+L -10,10,-10 0.7 255,255,255
+
+# Sphere with bump map
+sp 0,1,0 2.0 200,200,200 bump:z_textures/red_mini.png bump_strength:0.7
+
+# Regular sphere without texture (backward compatibility test)
+sp 3,1,0 1.5 100,150,200
+
+# Plane (no texture)
+pl 0,0,0 0,1,0 128,128,128

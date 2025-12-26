@@ -35,6 +35,7 @@ typedef struct mlx_image mlx_image_t;
 # include "parsing_bonus.h"
 # include "rendering_bonus.h"
 # include "utils_bonus.h"
+# include "texture_bonus.h"
 
 // Patterns API
 t_pattern	stripe_patern(t_tuple a, t_tuple b);

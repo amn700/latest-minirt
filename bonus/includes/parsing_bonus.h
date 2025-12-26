@@ -31,7 +31,8 @@ bool	f_range_validator(float min, float max, char *line);
 void	check_parsed_data(t_data *data);
 void	print_matrix(const char *label, t_matrix m);
 void	debug_world_state(t_world world, t_camera cam);
-bool	parse_material_params(char **fields, int start_idx, t_material *mat);
+bool	parse_material_params(char **fields, int start_idx, t_material *mat, 
+			mlx_t *mlx);
 int		count_fields(char **fields);
 
 #endif

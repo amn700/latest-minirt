@@ -60,7 +60,7 @@ bool	plane_extract(char *line, t_data *data)
 	pl = plane();
 	pl.material = material();
 	setup_plane_data(&pl, fields);
-	if (field_count > 10 && !parse_material_params(fields, 10, &pl.material))
+	if (field_count > 10 && !parse_material_params(fields, 10, &pl.material, data->ptr))
 		return (printf("❌ pl: Invalid material params starting at field 10\n"), free_matrix(fields), false);
 	pl_obj = new_object(OBJ_PLANE, (t_shapes){.pl = pl});
 	ft_add_object(&data->object, pl_obj);

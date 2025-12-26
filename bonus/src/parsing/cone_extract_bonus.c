@@ -110,7 +110,7 @@ bool	cone_extract(char *line, t_data *data)
 	setup_cone_data(&co, fields, field_count, false);
 	color_idx = (field_count >= 13) ? 10 : 9;
 	if (field_count > color_idx + 3
-		&& !parse_material_params(fields, color_idx + 3, &co.material))
+		&& !parse_material_params(fields, color_idx + 3, &co.material, data->ptr))
 		return (printf("❌ co: Invalid material params\n"), free_matrix(fields), false);
 	co_obj = new_object(OBJ_CONE, (t_shapes){.co = co});
 	ft_add_object(&data->object, co_obj);
