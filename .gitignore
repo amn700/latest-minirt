@@ -6,4 +6,5 @@ libft/*.o
 libft/*.a
 bonus/miniRT_bonus
 mandatory/miniRT
+new/miniRTnew/obj/
 new/miniRT

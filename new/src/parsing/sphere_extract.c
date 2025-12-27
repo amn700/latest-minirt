@@ -35,16 +35,32 @@ static void	setup_sphere_transform(t_sphere *sp, char **fields)
 	sp->material.color.w = 0;
 }
 
+static void	parse_sphere_textures(t_sphere *sp, char **fields)
+{
+	int	i;
+
+	i = 8;
+	while (fields[i])
+	{
+		parse_texture_param(fields[i], &sp->material);
+		i++;
+	}
+}
+
 bool	sphere_extract(char *line, t_data *data)
 {
 	char		**fields;
 	t_sphere	sp;
 	t_object	*sp_obj;
+	int			field_count;
 
 	fields = ft_split_rt(line, " \t,\n");
 	if (!fields)
 		return (false);
-	if (!check_fields_num(fields, 8))
+	field_count = 0;
+	while (fields[field_count])
+		field_count++;
+	if (field_count < 8)
 		return (free_matrix(fields), false);
 	if (ft_strncmp(fields[0], "sp", 3) != 0)
 		return (free_matrix(fields), false);
@@ -58,6 +74,7 @@ bool	sphere_extract(char *line, t_data *data)
 	sp = sphere();
 	sp.material = material();
 	setup_sphere_transform(&sp, fields);
+	parse_sphere_textures(&sp, fields);
 	sp_obj = new_object(OBJ_SPHERE, (t_shapes){.sp = sp});
 	ft_add_object(&data->object, sp_obj);
 	return (free_matrix(fields), true);

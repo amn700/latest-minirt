@@ -32,4 +32,8 @@ void	check_parsed_data(t_data *data);
 void	print_matrix(const char *label, t_matrix m);
 void	debug_world_state(t_world world, t_camera cam);
 
+/* Texture parsing functions */
+bool	parse_texture_param(char *param, t_material *material);
+void	free_material_textures(t_material *material);
+
 #endif

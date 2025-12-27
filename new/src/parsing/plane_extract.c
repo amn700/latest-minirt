@@ -36,16 +36,32 @@ static void	setup_plane_data(t_plane *pl, char **fields)
 	pl->material.color.w = 0;
 }
 
+static void	parse_plane_textures(t_plane *pl, char **fields)
+{
+	int	i;
+
+	i = 10;
+	while (fields[i])
+	{
+		parse_texture_param(fields[i], &pl->material);
+		i++;
+	}
+}
+
 bool	plane_extract(char *line, t_data *data)
 {
 	t_plane		pl;
 	t_object	*pl_obj;
 	char		**fields;
+	int			field_count;
 
 	fields = ft_split_rt(line, " \t,\n");
 	if (!fields)
 		return (false);
-	if (!check_fields_num(fields, 10))
+	field_count = 0;
+	while (fields[field_count])
+		field_count++;
+	if (field_count < 10)
 		return (free_matrix(fields), false);
 	if (ft_strncmp(fields[0], "pl", 3) != 0)
 		return (free_matrix(fields), false);
@@ -58,6 +74,7 @@ bool	plane_extract(char *line, t_data *data)
 	pl = plane();
 	pl.material = material();
 	setup_plane_data(&pl, fields);
+	parse_plane_textures(&pl, fields);
 	pl_obj = new_object(OBJ_PLANE, (t_shapes){.pl = pl});
 	ft_add_object(&data->object, pl_obj);
 	return (free_matrix(fields), true);

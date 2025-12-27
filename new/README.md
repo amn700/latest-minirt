@@ -405,3 +405,140 @@ amn700 / amn
 ## License
 
 See 42 School guidelines
+
+## Texture Mapping and Bump/Normal Mapping
+
+This version of miniRT includes support for texture mapping and bump/normal mapping using libpng.
+
+### Features
+
+- **Texture Mapping**: Apply PNG images as textures to spheres, planes, and cylinders
+- **Bump/Normal Mapping**: Add surface detail using normal maps
+- **UV Mapping**: Automatic UV coordinate calculation for each primitive type
+- **PNG Support**: Load textures from PNG files using libpng
+
+### Building with Texture Support
+
+#### Dependencies
+
+You need to have libpng development libraries installed:
+
+**On Ubuntu/Debian:**
+```bash
+sudo apt-get install libpng-dev
+```
+
+**On macOS:**
+```bash
+brew install libpng
+```
+
+#### Building
+
+```bash
+cd new/
+make
+```
+
+The Makefile automatically detects and links libpng using pkg-config.
+
+### Scene File Syntax
+
+Add textures to objects using the following syntax:
+
+#### Texture Mapping (tex=)
+
+```
+sp 0,1,0 2.0 200,200,200 tex=path/to/texture.png
+pl 0,0,0 0,1,0 128,128,128 tex=assets/textures/checker.png
+cy 0,0,0 0,1,0 1.0 3.0 150,150,150 tex=textures/wood.png
+```
+
+#### Bump/Normal Mapping (btex=)
+
+```
+sp 0,1,0 2.0 200,200,200 btex=path/to/normal_map.png
+pl 0,0,0 0,1,0 128,128,128 btex=assets/textures/bumps.png
+```
+
+#### Combined
+
+```
+sp 0,1,0 2.0 200,200,200 tex=textures/earth.png btex=textures/earth_normal.png
+```
+
+### UV Mapping Details
+
+Each primitive has its own UV mapping:
+
+- **Sphere**: Spherical mapping using longitude/latitude coordinates
+- **Plane**: Planar mapping with automatic tiling (wraps x and z coordinates)
+- **Cylinder**: Cylindrical mapping (circumference for u, height for v)
+
+### Example Scenes
+
+Example scenes with textures are provided in the `scenes/` directory:
+
+- `scenes/textured_sphere.rt` - Simple textured sphere
+- `scenes/textured_and_bumped.rt` - Multiple spheres with textures and bump maps
+- `scenes/textured_plane_cylinder.rt` - Textured plane and cylinder
+
+### Sample Textures
+
+Sample textures are included in `assets/textures/`:
+- `checker.png` - Simple checker pattern
+- `normal_sphere.png` - Normal map for spheres
+
+### Backward Compatibility
+
+All existing scene files continue to work without modification. Texture parameters are optional - if not specified, objects render with their material color as before.
+
+### Memory Management
+
+Textures are automatically freed when the program exits. Each texture is loaded once and stored in the material structure.
+
+### Limitations
+
+- Only PNG format is supported
+- Texture paths are relative to the executable or absolute
+- Large textures (>4096x4096) may impact performance
+- No texture filtering or mipmapping (uses nearest-neighbor sampling)
+
+### Implementation Files
+
+New files added for texture support:
+
+**Headers:**
+- `includes/ft_png.h` - PNG loading and texture management
+
+**PNG Loading:**
+- `png/ft_png_read.c` - PNG file reading using libpng
+- `png/ft_png_img_to_tex.c` - PNG to texture conversion
+- `png/ft_png_utils.c` - PNG writing utilities
+
+**Geometry:**
+- `src/geometry/uv_mapping.c` - UV coordinate calculation
+
+**Lighting:**
+- `src/lighting/texture_helpers.c` - Texture sampling
+- `src/lighting/normals_helpers.c` - Normal perturbation with TBN
+
+**Parsing:**
+- `src/parsing/texture_parsing.c` - Texture parameter parsing
+
+### Troubleshooting
+
+**Issue: "Cannot find libpng"**
+- Install libpng-dev package
+- Ensure pkg-config can find libpng: `pkg-config --cflags --libs libpng`
+
+**Issue: "Failed to load texture"**
+- Check that the texture file path is correct
+- Verify the file is a valid PNG image
+- Ensure the file has read permissions
+
+**Issue: Textures appear incorrect**
+- Check UV mapping orientation
+- Verify normal map format (RGB where each channel represents normal X, Y, Z)
+- Ensure texture dimensions are powers of 2 for best results (not required, but recommended)
+

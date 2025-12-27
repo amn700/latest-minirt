@@ -44,16 +44,32 @@ static void	setup_cylinder_data(t_cylinder *cl, char **fields)
 	cl->material.color.w = 0;
 }
 
+static void	parse_cylinder_textures(t_cylinder *cl, char **fields)
+{
+	int	i;
+
+	i = 12;
+	while (fields[i])
+	{
+		parse_texture_param(fields[i], &cl->material);
+		i++;
+	}
+}
+
 bool	cylinder_extract(char *line, t_data *data)
 {
 	t_cylinder	cl;
 	t_object	*cl_obj;
 	char		**fields;
+	int			field_count;
 
 	fields = ft_split_rt(line, " \t,\n");
 	if (!fields)
 		return (false);
-	if (!check_fields_num(fields, 12))
+	field_count = 0;
+	while (fields[field_count])
+		field_count++;
+	if (field_count < 12)
 		return (free_matrix(fields), false);
 	if (ft_strncmp(fields[0], "cy", 3) != 0)
 		return (free_matrix(fields), false);
@@ -72,6 +88,7 @@ bool	cylinder_extract(char *line, t_data *data)
 	cl = cylinder();
 	cl.material = material();
 	setup_cylinder_data(&cl, fields);
+	parse_cylinder_textures(&cl, fields);
 	cl_obj = new_object(OBJ_CYLINDER, (t_shapes){.cy = cl});
 	ft_add_object(&data->object, cl_obj);
 	return (free_matrix(fields), true);

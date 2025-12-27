@@ -91,7 +91,8 @@ SRCS = $(SRC_DIR)/main.c \
 	   $(SRC_DIR)/parsing/cylinder_extract.c \
 	   $(SRC_DIR)/parsing/scene_extractors.c \
 	   $(SRC_DIR)/parsing/split.c \
-	   $(SRC_DIR)/parsing/apply_ambient.c
+	   $(SRC_DIR)/parsing/apply_ambient.c \
+	   $(SRC_DIR)/parsing/texture_parsing.c
 
 # Get Next Line sources
 GNL_SRCS = $(GNL_DIR)/get_next_line.c \
