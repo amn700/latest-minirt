@@ -39,4 +39,9 @@ float		hit(t_inters *list);
 t_tuple		position(t_ray ray, float distance);
 t_ray		transform_ray(t_ray ray, t_matrix m);
 
+/* UV mapping functions */
+void		sphere_uv(t_tuple point, float *u, float *v);
+void		plane_uv(t_tuple point, float *u, float *v);
+void		cylinder_uv(t_tuple point, float *u, float *v);
+
 #endif

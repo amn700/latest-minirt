@@ -18,10 +18,13 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 # Math library flag
 MATH_FLAGS = -lm
+# PNG library flags
+PNG_CFLAGS = $(shell pkg-config --cflags libpng)
+PNG_LIBS = $(shell pkg-config --libs libpng)
 # macOS MLX42 flags for M1
-MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -lglfw
+# MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -lglfw
 # Linux MLX42 flags (uncomment for Linux)
-# MLX_FLAGS = -ldl -lglfw -pthread -lX11 -lGL -lrt -lXrandr -lXinerama -lXcursor -lXi -lXxf86vm
+MLX_FLAGS = -ldl -lglfw -pthread -lX11 -lGL -lrt -lXrandr -lXinerama -lXcursor -lXi -lXxf86vm
 # Directories
 SRC_DIR = src
 OBJ_DIR = obj
@@ -34,7 +37,8 @@ MLX42_DIR = ../MLX42
 INCLUDES = -I$(INC_DIR) \
 		   -I$(LIBFT_DIR) \
 		   -I$(GNL_DIR) \
-		   -I$(MLX42_DIR)/include
+		   -I$(MLX42_DIR)/include \
+		   $(PNG_CFLAGS)
 
 # Source files
 SRCS = $(SRC_DIR)/main.c \
@@ -65,8 +69,14 @@ SRCS = $(SRC_DIR)/main.c \
 	   $(SRC_DIR)/geometry/cylinder_intersect.c \
 	   $(SRC_DIR)/geometry/ray_utils.c \
 	   $(SRC_DIR)/geometry/intersections_utils.c \
+	   $(SRC_DIR)/geometry/uv_mapping.c \
 	   $(SRC_DIR)/lighting/phong_lighting.c \
 	   $(SRC_DIR)/lighting/light_and_shades.c \
+	   $(SRC_DIR)/lighting/texture_helpers.c \
+	   $(SRC_DIR)/lighting/normals_helpers.c \
+	   png/ft_png_read.c \
+	   png/ft_png_img_to_tex.c \
+	   png/ft_png_utils.c \
 	   $(SRC_DIR)/rendering/render.c \
 	   $(SRC_DIR)/rendering/image_export.c \
 	   $(SRC_DIR)/rendering/color_conversion.c \
@@ -116,6 +126,7 @@ $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)/geometry
 	@mkdir -p $(OBJ_DIR)/lighting
 	@mkdir -p $(OBJ_DIR)/rendering
+	@mkdir -p $(OBJ_DIR)/png
 
 # Build libft
 $(LIBFT):
@@ -131,10 +142,14 @@ $(OBJ_DIR)/%.o: $(GNL_DIR)/%.c | $(OBJ_DIR)
 	@echo "$(GREEN)Compiling $<$(NC)"
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+$(OBJ_DIR)/png/%.o: png/%.c | $(OBJ_DIR)
+	@echo "$(GREEN)Compiling $<$(NC)"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
 # Main executable
 $(NAME): $(OBJS) $(GNL_OBJS) $(LIBFT)
 	@echo "$(YELLOW)Linking $(NAME)...$(NC)"
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(GNL_OBJS) $(LIBFT) $(MLX42) $(MLX_FLAGS) $(MATH_FLAGS)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(GNL_OBJS) $(LIBFT) $(MLX42) $(MLX_FLAGS) $(MATH_FLAGS) $(PNG_LIBS)
 	@echo "$(GREEN)$(NAME) compiled successfully!$(NC)"
 
 # Clean object files

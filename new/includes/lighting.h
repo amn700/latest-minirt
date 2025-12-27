@@ -20,4 +20,9 @@ t_tuple		lighting(t_material material, t_light light, t_tuple position, \
 			t_tuple eyev, t_tuple normalv, bool in_shadow, \
 			t_tuple ambient_color);
 
+/* Texture helpers */
+t_tuple		ft_tex_color_at(t_comps *comps);
+t_tuple		ft_sample_texture(t_tex tex, float u, float v);
+t_tuple		perturb_normal_bump(t_comps *comps, t_tuple normal);
+
 #endif

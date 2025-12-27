@@ -26,6 +26,8 @@ static t_comps	*new_comps(void)
 	comp->t = 0.0;
 	comp->obj = NULL;
 	comp->inside = false;
+	comp->u = 0.0;
+	comp->v = 0.0;
 	return (comp);
 }
 
@@ -37,6 +39,32 @@ static void	get_normal_vector(t_comps *new)
 		new->normalv = plane_normal_at(new->obj->shape.pl);
 	else if (new->obj->type == OBJ_CYLINDER)
 		new->normalv = cylinder_normal_at(new->obj->shape.cy, new->point);
+}
+
+static void	compute_uv_coordinates(t_comps *new, t_ray ray)
+{
+	t_tuple	local_point;
+	t_matrix	inv;
+
+	if (new->obj->type == OBJ_SPHERE)
+	{
+		inv = inverse_matrix(new->obj->shape.sp.trans);
+		local_point = multiply_matrix_by_tuple(inv, new->point);
+		sphere_uv(local_point, &new->u, &new->v);
+	}
+	else if (new->obj->type == OBJ_PLANE)
+	{
+		inv = inverse_matrix(new->obj->shape.pl.trans);
+		local_point = multiply_matrix_by_tuple(inv, new->point);
+		plane_uv(local_point, &new->u, &new->v);
+	}
+	else if (new->obj->type == OBJ_CYLINDER)
+	{
+		inv = inverse_matrix(new->obj->shape.cy.trans);
+		local_point = multiply_matrix_by_tuple(inv, new->point);
+		cylinder_uv(local_point, &new->u, &new->v);
+	}
+	(void)ray;
 }
 
 t_comps	*prepare_computations(t_inters *intersection, t_ray ray)
@@ -52,6 +80,8 @@ t_comps	*prepare_computations(t_inters *intersection, t_ray ray)
 	new->point = position(ray, new->t);
 	new->eyev = negate_tuple(ray.direction);
 	get_normal_vector(new);
+	compute_uv_coordinates(new, ray);
+	new->normalv = perturb_normal_bump(new, new->normalv);
 	original_normal = new->normalv;
 	if (vecs_dot_product(new->normalv, new->eyev) < 0)
 	{

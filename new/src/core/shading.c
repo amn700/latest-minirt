@@ -29,16 +29,21 @@ bool	is_shadowed(t_world world, t_tuple point, t_light *light)
 static t_tuple	get_material_contribution(t_comps *comp, t_light *light, \
 				bool in_shadow, t_tuple ambient_color)
 {
+	t_material	mat;
+	t_tuple		tex_color;
+
 	if (comp->obj->type == OBJ_SPHERE)
-		return (lighting(comp->obj->shape.sp.material, *light, comp->point, \
-			comp->eyev, comp->normalv, in_shadow, ambient_color));
+		mat = comp->obj->shape.sp.material;
 	else if (comp->obj->type == OBJ_PLANE)
-		return (lighting(comp->obj->shape.pl.material, *light, comp->point, \
-			comp->eyev, comp->normalv, in_shadow, ambient_color));
+		mat = comp->obj->shape.pl.material;
 	else if (comp->obj->type == OBJ_CYLINDER)
-		return (lighting(comp->obj->shape.cy.material, *light, comp->point, \
-			comp->eyev, comp->normalv, in_shadow, ambient_color));
-	return ((t_tuple){0, 0, 0, 0});
+		mat = comp->obj->shape.cy.material;
+	else
+		return ((t_tuple){0, 0, 0, 0});
+	tex_color = ft_tex_color_at(comp);
+	mat.color = tex_color;
+	return (lighting(mat, *light, comp->point, \
+		comp->eyev, comp->normalv, in_shadow, ambient_color));
 }
 
 t_tuple	shade_hit(t_world world, t_comps *comp)

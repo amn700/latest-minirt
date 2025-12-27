@@ -53,6 +53,21 @@ typedef enum e_obj_type
 	OBJ_CYLINDER
 }	t_obj_type;
 
+typedef struct s_color
+{
+	unsigned char	r;
+	unsigned char	g;
+	unsigned char	b;
+	unsigned char	a;
+}	t_color;
+
+typedef struct s_tex
+{
+	int		width;
+	int		height;
+	t_color	**pixels;
+}	t_tex;
+
 typedef struct s_material
 {
 	t_tuple	color;
@@ -60,6 +75,10 @@ typedef struct s_material
 	float	diffuse;
 	float	specular;
 	float	shininess;
+	t_tex	tex;
+	t_tex	btex;
+	bool	has_tex;
+	bool	has_btex;
 }	t_material;
 
 typedef struct s_sphere
@@ -148,6 +167,8 @@ typedef struct s_computations
 	t_tuple		normalv;
 	t_tuple		over_point;
 	bool		inside;
+	float		u;
+	float		v;
 }	t_comps;
 
 typedef struct s_world
