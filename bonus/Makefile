@@ -18,6 +18,9 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 # Math library flag
 MATH_FLAGS = -lm
+# PNG library flags
+PNG_CFLAGS = $(shell pkg-config --cflags libpng)
+PNG_LIBS = $(shell pkg-config --libs libpng)
 
 # macOS MLX42 flags for M1
 # MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -L/goinfre/mohchaib/homebrew/lib -lglfw -pthread -ldl
@@ -35,7 +38,8 @@ MLX42_DIR = ../MLX42
 INCLUDES = -I$(INC_DIR) \
 		   -I$(LIBFT_DIR) \
 		   -I$(GNL_DIR) \
-		   -I$(MLX42_DIR)/include
+		   -I$(MLX42_DIR)/include \
+		   $(PNG_CFLAGS)
 
 # Source files
 SRCS = $(SRC_DIR)/main_bonus.c \
@@ -89,9 +93,13 @@ SRCS = $(SRC_DIR)/main_bonus.c \
 	   $(SRC_DIR)/parsing/apply_ambient_bonus.c \
 	   $(SRC_DIR)/parsing/debug_parsing_bonus.c \
 	   $(SRC_DIR)/parsing/material_params_bonus.c \
-	   $(SRC_DIR)/parsing/texture_parsing_bonus.c \
+	   $(SRC_DIR)/parsing/texture_parsing_new_bonus.c \
 	   $(SRC_DIR)/geometry/uv_mapping_bonus.c \
-	   $(SRC_DIR)/lighting/bump_mapping_bonus.c
+	   $(SRC_DIR)/lighting/texture_helpers_bonus.c \
+	   $(SRC_DIR)/lighting/normals_helpers_bonus.c \
+	   png/ft_png_read_bonus.c \
+	   png/ft_png_img_to_tex_bonus.c \
+	   png/ft_png_utils_bonus.c
 
 # Get Next Line sources
 GNL_SRCS = $(GNL_DIR)/get_next_line.c \
@@ -129,6 +137,7 @@ $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)/lighting
 	@mkdir -p $(OBJ_DIR)/rendering
 	@mkdir -p $(OBJ_DIR)/paterns
+	@mkdir -p $(OBJ_DIR)/png
 
 # Build libft
 $(LIBFT):
@@ -149,10 +158,14 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	@mkdir -p $(dir $@)
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
+$(OBJ_DIR)/png/%.o: png/%_bonus.c | $(OBJ_DIR)
+	@echo "$(GREEN)Compiling $<$(NC)"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
 # Main executable
 $(NAME): $(OBJS) $(EXTRA_OBJS) $(GNL_OBJS) $(LIBFT)
 	@echo "$(YELLOW)Linking $(NAME)...$(NC)"
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(EXTRA_OBJS) $(GNL_OBJS) $(LIBFT) $(MLX42) $(MLX_FLAGS) $(MATH_FLAGS)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(EXTRA_OBJS) $(GNL_OBJS) $(LIBFT) $(MLX42) $(MLX_FLAGS) $(MATH_FLAGS) $(PNG_LIBS)
 	@echo "$(GREEN)$(NAME) compiled successfully!$(NC)"
 
 # Clean object files

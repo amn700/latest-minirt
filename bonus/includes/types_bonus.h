@@ -54,6 +54,21 @@ typedef enum e_obj_type
 	OBJ_CONE
 }	t_obj_type;
 
+typedef struct s_color
+{
+	unsigned char	r;
+	unsigned char	g;
+	unsigned char	b;
+	unsigned char	a;
+}	t_color;
+
+typedef struct s_tex
+{
+	int		width;
+	int		height;
+	t_color	**pixels;
+}	t_tex;
+
 typedef struct s_pattern
 {
     t_tuple		a;
@@ -63,8 +78,6 @@ typedef struct s_pattern
 	t_matrix    inv_transform;
 	bool        has_transform;
 }           	t_pattern;
-
-typedef struct mlx_texture mlx_texture_t;
 
 typedef struct s_material
 {
@@ -77,11 +90,11 @@ typedef struct s_material
 	float	transparency;
 	float	refract_index;
 	t_pattern	pattern;
-	mlx_texture_t	*bump_map;
-	mlx_texture_t	*normal_map;
+	t_tex	tex;
+	t_tex	btex;
 	float	bump_strength;
-	bool	has_bump_map;
-	bool	has_normal_map;
+	bool	has_tex;
+	bool	has_btex;
 }	t_material;
 
 typedef struct s_sphere
@@ -190,6 +203,8 @@ typedef struct s_computations
 	bool		inside;
 	float		n1;
 	float		n2;
+	float		u;
+	float		v;
 }	t_comps;
 
 typedef struct s_world

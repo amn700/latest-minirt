@@ -201,6 +201,7 @@ bool	parse_material_params(char **fields, int start_idx, t_material *mat,
 	float	specular;
 	float	shininess;
 
+	(void)mlx;
 	i = start_idx;
 	mat->pattern.a = mat->color;
 	mat->pattern.b = mat->color;
@@ -242,8 +243,17 @@ bool	parse_material_params(char **fields, int start_idx, t_material *mat,
 	}
 	if (saw_pattern && mat->pattern.at == NULL)
 		mat->pattern = stripe_patern(mat->pattern.a, mat->pattern.b);
-	if (!load_material_textures(mat, &fields[start_idx], mlx))
-		return (false);
+	i = start_idx;
+	while (fields[i])
+	{
+		if (ft_strncmp(fields[i], "tex=", 4) == 0 || 
+			ft_strncmp(fields[i], "btex=", 5) == 0)
+		{
+			if (!parse_texture_param(fields[i], mat))
+				return (false);
+		}
+		i++;
+	}
 	return (true);
 }
 

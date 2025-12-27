@@ -1,27 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   texture_bonus.h                                    :+:      :+:    :+:   */
+/*   ft_png.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/26 00:00:00 by amn               #+#    #+#             */
+/*   Created: 2025/12/27 00:00:00 by amn               #+#    #+#             */
 /*   Updated: 2025/12/27 00:00:00 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef TEXTURE_BONUS_H
-# define TEXTURE_BONUS_H
+#ifndef FT_PNG_H
+# define FT_PNG_H
 
 # include "types_bonus.h"
+# include <png.h>
+# include <stdbool.h>
 
-/* Texture helpers */
-t_tuple		ft_tex_color_at(t_comps *comps);
-t_tuple		ft_sample_texture(t_tex tex, float u, float v);
-t_tuple		perturb_normal_bump(t_comps *comps, t_tuple normal);
+typedef struct s_png_img
+{
+	int				width;
+	int				height;
+	png_byte		color_type;
+	png_byte		bit_depth;
+	png_bytep		*row_pointers;
+}	t_png_img;
 
-/* Texture parsing */
-bool		parse_texture_param(char *param, t_material *material);
-void		free_material_textures(t_material *material);
+/* PNG loading and conversion */
+t_png_img	ft_allocate_png_img(const char *filename);
+t_tex		ft_png_img_to_tex(t_png_img img);
+bool		ft_read_png_file(const char *filename, t_png_img *img);
+void		ft_free_png_img(t_png_img *img);
+
+/* Texture management */
+void		ft_free_tex(t_tex *tex);
+bool		ft_write_png_file(const char *filename, t_tex tex);
 
 #endif
