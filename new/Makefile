@@ -18,10 +18,12 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 # Math library flag
 MATH_FLAGS = -lm
+# PNG library flag
+PNG_FLAGS = -lpng
 # macOS MLX42 flags for M1
-MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -lglfw
+# MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -lglfw
 # Linux MLX42 flags (uncomment for Linux)
-# MLX_FLAGS = -ldl -lglfw -pthread -lX11 -lGL -lrt -lXrandr -lXinerama -lXcursor -lXi -lXxf86vm
+MLX_FLAGS = -ldl -lglfw -pthread -lX11 -lGL -lrt -lXrandr -lXinerama -lXcursor -lXi -lXxf86vm
 # Directories
 SRC_DIR = src
 OBJ_DIR = obj
@@ -81,7 +83,10 @@ SRCS = $(SRC_DIR)/main.c \
 	   $(SRC_DIR)/parsing/cylinder_extract.c \
 	   $(SRC_DIR)/parsing/scene_extractors.c \
 	   $(SRC_DIR)/parsing/split.c \
-	   $(SRC_DIR)/parsing/apply_ambient.c
+	   $(SRC_DIR)/parsing/apply_ambient.c \
+	   $(SRC_DIR)/png/ft_png_read.c \
+	   $(SRC_DIR)/light_shading/texture_helpers.c \
+	   $(SRC_DIR)/light_shading/normals_helpers.c
 
 # Get Next Line sources
 GNL_SRCS = $(GNL_DIR)/get_next_line.c \
@@ -116,6 +121,8 @@ $(OBJ_DIR):
 	@mkdir -p $(OBJ_DIR)/geometry
 	@mkdir -p $(OBJ_DIR)/lighting
 	@mkdir -p $(OBJ_DIR)/rendering
+	@mkdir -p $(OBJ_DIR)/png
+	@mkdir -p $(OBJ_DIR)/light_shading
 
 # Build libft
 $(LIBFT):
@@ -134,7 +141,7 @@ $(OBJ_DIR)/%.o: $(GNL_DIR)/%.c | $(OBJ_DIR)
 # Main executable
 $(NAME): $(OBJS) $(GNL_OBJS) $(LIBFT)
 	@echo "$(YELLOW)Linking $(NAME)...$(NC)"
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(GNL_OBJS) $(LIBFT) $(MLX42) $(MLX_FLAGS) $(MATH_FLAGS)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(GNL_OBJS) $(LIBFT) $(MLX42) $(MLX_FLAGS) $(MATH_FLAGS) $(PNG_FLAGS)
 	@echo "$(GREEN)$(NAME) compiled successfully!$(NC)"
 
 # Clean object files
