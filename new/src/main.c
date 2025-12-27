@@ -67,6 +67,12 @@ void	free_objects_and_lights(t_data *data)
 	while (obj)
 	{
 		next_obj = obj->next;
+		if (obj->type == OBJ_SPHERE)
+			free_material_textures(&obj->shape.sp.material);
+		else if (obj->type == OBJ_PLANE)
+			free_material_textures(&obj->shape.pl.material);
+		else if (obj->type == OBJ_CYLINDER)
+			free_material_textures(&obj->shape.cy.material);
 		free(obj);
 		obj = next_obj;
 	}

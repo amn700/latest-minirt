@@ -14,13 +14,22 @@
 
 t_material	material(void)
 {
-	return ((t_material){
-		.color = {1, 1, 1, 0},
-		.ambient = 0.1,
-		.diffuse = 0.9,
-		.specular = 0.9,
-		.shininess = 200.0
-	});
+	t_material	mat;
+
+	mat.color = (t_tuple){1, 1, 1, 0};
+	mat.ambient = 0.1;
+	mat.diffuse = 0.9;
+	mat.specular = 0.9;
+	mat.shininess = 200.0;
+	mat.tex.width = 0;
+	mat.tex.height = 0;
+	mat.tex.pixels = NULL;
+	mat.btex.width = 0;
+	mat.btex.height = 0;
+	mat.btex.pixels = NULL;
+	mat.has_tex = false;
+	mat.has_btex = false;
+	return (mat);
 }
 
 t_sphere	sphere(void)
