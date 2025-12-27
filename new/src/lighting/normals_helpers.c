@@ -66,7 +66,7 @@ static t_tuple	apply_tbn(t_tuple tangent_normal, t_tuple tangent, \
 }
 
 /*
- * Get material from object
+ * Get material from object, or return default if invalid
  */
 static t_material	get_material(t_object *obj)
 {
@@ -76,8 +76,7 @@ static t_material	get_material(t_object *obj)
 		return (obj->shape.pl.material);
 	else if (obj->type == OBJ_CYLINDER)
 		return (obj->shape.cy.material);
-	return ((t_material){{0, 0, 0, 0}, 0, 0, 0, 0, {0, 0, NULL}, \
-		{0, 0, NULL}, false, false});
+	return (material());
 }
 
 /*

@@ -12,8 +12,6 @@
 
 #include "../../includes/miniRT.h"
 #include "../../includes/ft_png.h"
-#include <fcntl.h>
-#include <unistd.h>
 
 /*
  * Load a texture from a PNG file
@@ -21,15 +19,7 @@
 static bool	load_texture_file(char *path, t_tex *tex)
 {
 	t_png_img	img;
-	int			fd;
 
-	fd = open(path, O_RDONLY);
-	if (fd < 0)
-	{
-		printf("Error: Cannot open texture file '%s'\n", path);
-		return (false);
-	}
-	close(fd);
 	img = ft_allocate_png_img(path);
 	if (img.width == 0 || img.height == 0)
 	{

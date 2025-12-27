@@ -43,7 +43,7 @@ t_tuple	ft_sample_texture(t_tex tex, float u, float v)
 }
 
 /*
- * Get material color for a hit point, using texture if available
+ * Get material from object, or return default if invalid
  */
 static t_material	get_material(t_object *obj)
 {
@@ -53,8 +53,7 @@ static t_material	get_material(t_object *obj)
 		return (obj->shape.pl.material);
 	else if (obj->type == OBJ_CYLINDER)
 		return (obj->shape.cy.material);
-	return ((t_material){{0, 0, 0, 0}, 0, 0, 0, 0, {0, 0, NULL}, \
-		{0, 0, NULL}, false, false});
+	return (material());
 }
 
 t_tuple	ft_tex_color_at(t_comps *comps)
