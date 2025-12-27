@@ -20,9 +20,9 @@ CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=address
 MATH_FLAGS = -lm
 
 # macOS MLX42 flags for M1
-MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -L/goinfre/mohchaib/homebrew/lib -lglfw -pthread -ldl
+# MLX_FLAGS = -framework Cocoa -framework OpenGL -framework IOKit -L/goinfre/mohchaib/homebrew/lib -lglfw -pthread -ldl
 # Linux MLX42 flags (uncomment for Linux)
-# MLX_FLAGS = -ldl -lglfw -pthread -lX11 -lGL -lrt -lXrandr -lXinerama -lXcursor -lXi -lXxf86vm
+MLX_FLAGS = -ldl -lglfw -pthread -lm
 # Directories
 SRC_DIR = src
 OBJ_DIR = obj
@@ -88,7 +88,10 @@ SRCS = $(SRC_DIR)/main_bonus.c \
 	   $(SRC_DIR)/parsing/split_bonus.c \
 	   $(SRC_DIR)/parsing/apply_ambient_bonus.c \
 	   $(SRC_DIR)/parsing/debug_parsing_bonus.c \
-	   $(SRC_DIR)/parsing/material_params_bonus.c
+	   $(SRC_DIR)/parsing/material_params_bonus.c \
+	   $(SRC_DIR)/parsing/texture_parsing_bonus.c \
+	   $(SRC_DIR)/geometry/uv_mapping_bonus.c \
+	   $(SRC_DIR)/lighting/bump_mapping_bonus.c
 
 # Get Next Line sources
 GNL_SRCS = $(GNL_DIR)/get_next_line.c \

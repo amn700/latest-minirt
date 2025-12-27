@@ -64,6 +64,8 @@ typedef struct s_pattern
 	bool        has_transform;
 }           	t_pattern;
 
+typedef struct mlx_texture mlx_texture_t;
+
 typedef struct s_material
 {
 	t_tuple	color;
@@ -75,6 +77,11 @@ typedef struct s_material
 	float	transparency;
 	float	refract_index;
 	t_pattern	pattern;
+	mlx_texture_t	*bump_map;
+	mlx_texture_t	*normal_map;
+	float	bump_strength;
+	bool	has_bump_map;
+	bool	has_normal_map;
 }	t_material;
 
 typedef struct s_sphere

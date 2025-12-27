@@ -60,7 +60,7 @@ bool	sphere_extract(char *line, t_data *data)
 	sp = sphere();
 	sp.material = material();
 	setup_sphere_transform(&sp, fields);
-	if (field_count > 8 && !parse_material_params(fields, 8, &sp.material))
+	if (field_count > 8 && !parse_material_params(fields, 8, &sp.material, data->ptr))
 		return (printf("❌ sp: Invalid material params starting at field 8\n"), free_matrix(fields), false);
 	sp_obj = new_object(OBJ_SPHERE, (t_shapes){.sp = sp});
 	ft_add_object(&data->object, sp_obj);

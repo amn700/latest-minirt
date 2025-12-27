@@ -22,7 +22,12 @@ t_material	material(void)
 		.reflective = 0.0,
 		.shininess = 200.0,
 		.transparency = 0.0,
-		.refract_index = 1.0
+		.refract_index = 1.0,
+		.bump_map = NULL,
+		.normal_map = NULL,
+		.bump_strength = 0.5,
+		.has_bump_map = false,
+		.has_normal_map = false
 	});
 }
 

@@ -190,7 +190,8 @@ static bool	parse_shininess(char *param, float *specular, float *shininess)
 	return (free_matrix(parts), valid);
 }
 
-bool	parse_material_params(char **fields, int start_idx, t_material *mat)
+bool	parse_material_params(char **fields, int start_idx, t_material *mat, 
+			mlx_t *mlx)
 {
 	int		i;
 	bool    saw_pattern;
@@ -230,12 +231,19 @@ bool	parse_material_params(char **fields, int start_idx, t_material *mat)
 				mat->specular = specular;
 			mat->shininess = shininess;
 		}
+		else if (ft_strncmp(fields[i], "bump:", 5) == 0 || 
+				ft_strncmp(fields[i], "bump_strength:", 14) == 0 ||
+				ft_strncmp(fields[i], "normal:", 7) == 0 ||
+				ft_strncmp(fields[i], "normal_strength:", 16) == 0)
+			;
 		else
 			return (false);
 		i++;
 	}
 	if (saw_pattern && mat->pattern.at == NULL)
 		mat->pattern = stripe_patern(mat->pattern.a, mat->pattern.b);
+	if (!load_material_textures(mat, &fields[start_idx], mlx))
+		return (false);
 	return (true);
 }
 

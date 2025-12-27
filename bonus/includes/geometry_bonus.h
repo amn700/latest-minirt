@@ -45,4 +45,10 @@ float		hit(t_inters *list);
 t_tuple		position(t_ray ray, float distance);
 t_ray		transform_ray(t_ray ray, t_matrix m);
 
+// UV Mapping
+t_tuple		sphere_uv_mapping(t_tuple local_point);
+t_tuple		plane_uv_mapping(t_tuple local_point);
+t_tuple		cylinder_uv_mapping(t_tuple local_point);
+t_tuple		cone_uv_mapping(t_tuple local_point);
+
 #endif

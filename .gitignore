@@ -1,1 +1,9 @@
 /MLX42
+*.o
+*.a
+bonus/obj/
+libft/*.o
+libft/*.a
+bonus/miniRT_bonus
+mandatory/miniRT
+new/miniRT

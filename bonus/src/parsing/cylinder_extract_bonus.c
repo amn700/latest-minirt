@@ -87,7 +87,7 @@ bool	cylinder_extract(char *line, t_data *data)
 	cl = cylinder();
 	cl.material = material();
 	setup_cylinder_data(&cl, fields, field_count);
-	if (field_count > color_idx + 3 && !parse_material_params(fields, color_idx + 3, &cl.material))
+	if (field_count > color_idx + 3 && !parse_material_params(fields, color_idx + 3, &cl.material, data->ptr))
 		return (printf("❌ cy: Invalid material params\n"), free_matrix(fields), false);
 	cl_obj = new_object(OBJ_CYLINDER, (t_shapes){.cy = cl});
 	ft_add_object(&data->object, cl_obj);
