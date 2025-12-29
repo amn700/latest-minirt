@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/26 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/26 00:00:00 by amn              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ typedef struct mlx_texture mlx_texture_t;
 // Texture Sampling
 float		sample_bump_map(mlx_texture_t *texture, float u, float v);
 t_tuple		sample_normal_map(mlx_texture_t *texture, float u, float v);
+t_tuple		sample_color_from_texture(mlx_texture_t *texture, float u, float v);
 
 // Normal Perturbation
 t_tuple		perturb_normal_with_bump(t_material material, t_tuple normal, 

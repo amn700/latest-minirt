@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   types_bonus.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/22 22:38:24 by mac              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,21 @@ typedef enum e_obj_type
 	OBJ_CONE
 }	t_obj_type;
 
+typedef struct s_color
+{
+	unsigned char	r;
+	unsigned char	g;
+	unsigned char	b;
+	unsigned char	a;
+}	t_color;
+
+typedef struct s_tex
+{
+	int		width;
+	int		height;
+	t_color	**pixels;
+}	t_tex;
+
 typedef struct s_pattern
 {
     t_tuple		a;
@@ -79,9 +94,11 @@ typedef struct s_material
 	t_pattern	pattern;
 	mlx_texture_t	*bump_map;
 	mlx_texture_t	*normal_map;
+	mlx_texture_t	*color_texture;
 	float	bump_strength;
 	bool	has_bump_map;
 	bool	has_normal_map;
+	bool	has_color_texture;
 }	t_material;
 
 typedef struct s_sphere

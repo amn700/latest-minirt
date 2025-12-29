@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/21 07:05:35 by mac              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@
 	data->world.objects = data->object;
 	data->world.lights = data->light;
 	data->world.ambient_color = data->ambl.color;
-	*cam = camera(1280, 720, data->cam.fov * M_PI / 180.0);
+	*cam = camera(1920, 1080, data->cam.fov * M_PI / 180.0);
 	cam->transform = view_transformation(data->cam.from, data->cam.to,
 			data->cam.up);
 	return (1);

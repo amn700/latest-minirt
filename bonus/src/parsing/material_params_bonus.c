@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/08 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/14 23:02:03 by amn              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,7 +234,11 @@ bool	parse_material_params(char **fields, int start_idx, t_material *mat,
 		else if (ft_strncmp(fields[i], "bump:", 5) == 0 || 
 				ft_strncmp(fields[i], "bump_strength:", 14) == 0 ||
 				ft_strncmp(fields[i], "normal:", 7) == 0 ||
-				ft_strncmp(fields[i], "normal_strength:", 16) == 0)
+				ft_strncmp(fields[i], "normal_strength:", 16) == 0 ||
+				ft_strncmp(fields[i], "texture:", 8) == 0)
+			;
+		else if (ft_strncmp(fields[i], "tex=", 4) == 0 || 
+				ft_strncmp(fields[i], "btex=", 5) == 0)
 			;
 		else
 			return (false);

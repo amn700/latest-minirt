@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   geometry_bonus.h                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/23 01:28:19 by mac              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 # include "types_bonus.h"
 
 # define EPSILON 0.001f
-# define CONE_EPSILON 0.0002f
+# define CONE_EPSILON 0.0001f
 # define PLANE_EPSILON 0.001f
 
 t_sphere	sphere(void);

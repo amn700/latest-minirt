@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   shading_bonus.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/21 03:27:44 by mac              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,33 +29,46 @@ bool	is_shadowed(t_world world, t_tuple point, t_light *light)
 static t_tuple	get_material_contribution(t_comps *comp, t_light *light, \
 				bool in_shadow, t_tuple ambient_color)
 {
-	t_tuple	point;
+	t_tuple		point;
+	t_material	mat;
 
 	point = comp->point;
 	if (comp->obj->type == OBJ_SPHERE)
 	{
 		point = multiply_matrix_by_tuple(inverse_matrix( \
 			comp->obj->shape.sp.trans), comp->point);
-		return (lighting(comp->obj->shape.sp.material, *light, point, \
+		mat = comp->obj->shape.sp.material;
+		if (mat.has_color_texture && mat.color_texture != NULL)
+			mat.color = (t_tuple){1, 1, 1, 0};  // Use white for texture objects
+		return (lighting(mat, *light, point, \
 			comp->eyev, comp->normalv, in_shadow, ambient_color));
 	}
 	else if (comp->obj->type == OBJ_PLANE)
 	{
 		point = multiply_matrix_by_tuple(inverse_matrix( \
 			comp->obj->shape.pl.trans), comp->point);
-		return (lighting(comp->obj->shape.pl.material, *light, point, \
+		mat = comp->obj->shape.pl.material;
+		if (mat.has_color_texture && mat.color_texture != NULL)
+			mat.color = (t_tuple){1, 1, 1, 0};  // Use white for texture objects
+		return (lighting(mat, *light, point, \
 			comp->eyev, comp->normalv, in_shadow, ambient_color));
 	}
 	else if (comp->obj->type == OBJ_CYLINDER)
 	{
 		point = multiply_matrix_by_tuple(inverse_matrix(comp->obj->shape.cy.trans), comp->point);
-		return (lighting(comp->obj->shape.cy.material, *light, point, \
+		mat = comp->obj->shape.cy.material;
+		if (mat.has_color_texture && mat.color_texture != NULL)
+			mat.color = (t_tuple){1, 1, 1, 0};  // Use white for texture objects
+		return (lighting(mat, *light, point, \
 			comp->eyev, comp->normalv, in_shadow, ambient_color));
 	}
 	else if (comp->obj->type == OBJ_CONE)
 	{
 		point = multiply_matrix_by_tuple(inverse_matrix(comp->obj->shape.co.trans), comp->point);
-		return (lighting(comp->obj->shape.co.material, *light, point, \
+		mat = comp->obj->shape.co.material;
+		if (mat.has_color_texture && mat.color_texture != NULL)
+			mat.color = (t_tuple){1, 1, 1, 0};  // Use white for texture objects
+		return (lighting(mat, *light, point, \
 			comp->eyev, comp->normalv, in_shadow, ambient_color));
 	}
 	return ((t_tuple){0, 0, 0, 0});
@@ -80,7 +93,15 @@ static t_tuple	get_ambient_contribution(t_comps *comp, t_tuple ambient_color)
 		mat = comp->obj->shape.co.material;
 	else
 		return ((t_tuple){0, 0, 0, 0});
-	if (mat.pattern.at)
+	
+	// Use white for textured objects, texture color applied later in shade_hit
+	if (mat.has_color_texture && mat.color_texture != NULL)
+		color_at_point = (t_tuple){1, 1, 1, 0};
+	else
+		color_at_point = mat.color;
+	
+	// Apply pattern if present (for non-textured objects)
+	if (mat.pattern.at != NULL)
 	{
 		pos = comp->point;
 		if (comp->obj->type == OBJ_SPHERE)
@@ -99,8 +120,6 @@ static t_tuple	get_ambient_contribution(t_comps *comp, t_tuple ambient_color)
 			pos = multiply_matrix_by_tuple(mat.pattern.inv_transform, pos);
 		color_at_point = mat.pattern.at(mat.pattern, pos);
 	}
-	else
-		color_at_point = mat.color;
 	return (hadamard_product(tuple_scalar_mult(color_at_point, mat.ambient), \
 		ambient_color));
 }
@@ -152,6 +171,57 @@ t_tuple	shade_hit(t_world world, t_comps *comp, int depth)
 	t_tuple	light_contrib;
 	float	transparency;
 	float	reflectance;
+	t_material mat;
+	t_tuple texture_color;
+	t_tuple pos;
+	t_tuple uv;
+
+	// Initialize mat with default values to prevent undefined behavior
+	mat = material();
+	mat.has_color_texture = false;
+	mat.color_texture = NULL;
+
+	// Get texture color if available
+	texture_color = (t_tuple){1, 1, 1, 0};  // White by default (no texture)
+	if (comp->obj->type == OBJ_SPHERE)
+		mat = comp->obj->shape.sp.material;
+	else if (comp->obj->type == OBJ_PLANE)
+		mat = comp->obj->shape.pl.material;
+	else if (comp->obj->type == OBJ_CYLINDER)
+		mat = comp->obj->shape.cy.material;
+	else if (comp->obj->type == OBJ_CONE)
+		mat = comp->obj->shape.co.material;
+	
+	// Sample texture if present
+	if (mat.has_color_texture && mat.color_texture != NULL)
+	{
+		pos = comp->point;
+		if (comp->obj->type == OBJ_SPHERE)
+		{
+			pos = multiply_matrix_by_tuple(inverse_matrix( \
+				comp->obj->shape.sp.trans), pos);
+			uv = sphere_uv_mapping(pos);
+		}
+		else if (comp->obj->type == OBJ_PLANE)
+		{
+			pos = multiply_matrix_by_tuple(inverse_matrix( \
+				comp->obj->shape.pl.trans), pos);
+			uv = plane_uv_mapping(pos);
+		}
+		else if (comp->obj->type == OBJ_CYLINDER)
+		{
+			pos = multiply_matrix_by_tuple(inverse_matrix( \
+				comp->obj->shape.cy.trans), pos);
+			uv = cylinder_uv_mapping(pos);
+		}
+		else if (comp->obj->type == OBJ_CONE)
+		{
+			pos = multiply_matrix_by_tuple(inverse_matrix( \
+				comp->obj->shape.co.trans), pos);
+			uv = cone_uv_mapping(pos);
+		}
+		texture_color = sample_color_from_texture(mat.color_texture, uv.x, uv.y);
+	}
 
 	opaque_surface = get_ambient_contribution(comp, world.ambient_color);
 	light = world.lights;
@@ -163,6 +233,9 @@ t_tuple	shade_hit(t_world world, t_comps *comp, int depth)
 		opaque_surface = add_tuple(opaque_surface, light_contrib);
 		light = light->next;
 	}
+	// Apply texture color to the final lit surface
+	// Pure hadamard product: modulates lighting by texture color
+	opaque_surface = hadamard_product(opaque_surface, texture_color);
 	transparency = get_object_transparency(comp);
 	surface = tuple_scalar_mult(opaque_surface, 1.0 - transparency);
 	reflected = reflected_color(world, comp, depth);

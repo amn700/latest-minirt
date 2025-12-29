@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   computations_bonus.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/20 06:40:52 by mac              ###   ########.fr       */
+/*   Updated: 2025/12/28 17:57:20 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/miniRT_bonus.h"
+#include "../../includes/texture_bonus.h"
 
 static t_comps	*new_comps(void)
 {
@@ -44,52 +45,51 @@ static void	get_normal_vector(t_comps *new)
 		new->normalv = cone_normal_at(new->obj->shape.co, new->point);
 }
 
-static void	apply_texture_mapping(t_comps *new)
+static t_tuple	get_local_point(t_comps *comp)
 {
-	t_material	material;
-	t_tuple		local_point;
-	t_matrix	inverse;
+	if (comp->obj->type == OBJ_SPHERE)
+		return (multiply_matrix_by_tuple(
+			inverse_matrix(comp->obj->shape.sp.trans), comp->point));
+	else if (comp->obj->type == OBJ_PLANE)
+		return (multiply_matrix_by_tuple(
+			inverse_matrix(comp->obj->shape.pl.trans), comp->point));
+	else if (comp->obj->type == OBJ_CYLINDER)
+		return (multiply_matrix_by_tuple(
+			inverse_matrix(comp->obj->shape.cy.trans), comp->point));
+	else if (comp->obj->type == OBJ_CONE)
+		return (multiply_matrix_by_tuple(
+			inverse_matrix(comp->obj->shape.co.trans), comp->point));
+	return (comp->point);
+}
 
-	if (new->obj->type == OBJ_SPHERE)
-	{
-		material = new->obj->shape.sp.material;
-		inverse = inverse_matrix(new->obj->shape.sp.trans);
-		local_point = multiply_matrix_by_tuple(inverse, new->point);
-		if (material.has_normal_map)
-			new->normalv = apply_normal_map(material, new->normalv, local_point, OBJ_SPHERE);
-		else if (material.has_bump_map)
-			new->normalv = perturb_normal_with_bump(material, new->normalv, local_point, OBJ_SPHERE);
-	}
-	else if (new->obj->type == OBJ_PLANE)
-	{
-		material = new->obj->shape.pl.material;
-		inverse = inverse_matrix(new->obj->shape.pl.trans);
-		local_point = multiply_matrix_by_tuple(inverse, new->point);
-		if (material.has_normal_map)
-			new->normalv = apply_normal_map(material, new->normalv, local_point, OBJ_PLANE);
-		else if (material.has_bump_map)
-			new->normalv = perturb_normal_with_bump(material, new->normalv, local_point, OBJ_PLANE);
-	}
-	else if (new->obj->type == OBJ_CYLINDER)
-	{
-		material = new->obj->shape.cy.material;
-		inverse = inverse_matrix(new->obj->shape.cy.trans);
-		local_point = multiply_matrix_by_tuple(inverse, new->point);
-		if (material.has_normal_map)
-			new->normalv = apply_normal_map(material, new->normalv, local_point, OBJ_CYLINDER);
-		else if (material.has_bump_map)
-			new->normalv = perturb_normal_with_bump(material, new->normalv, local_point, OBJ_CYLINDER);
-	}
-	else if (new->obj->type == OBJ_CONE)
-	{
-		material = new->obj->shape.co.material;
-		inverse = inverse_matrix(new->obj->shape.co.trans);
-		local_point = multiply_matrix_by_tuple(inverse, new->point);
-		if (material.has_normal_map)
-			new->normalv = apply_normal_map(material, new->normalv, local_point, OBJ_CONE);
-		else if (material.has_bump_map)
-			new->normalv = perturb_normal_with_bump(material, new->normalv, local_point, OBJ_CONE);
-	}
+static t_material	get_material(t_comps *comp)
+{
+	if (comp->obj->type == OBJ_SPHERE)
+		return (comp->obj->shape.sp.material);
+	else if (comp->obj->type == OBJ_PLANE)
+		return (comp->obj->shape.pl.material);
+	else if (comp->obj->type == OBJ_CYLINDER)
+		return (comp->obj->shape.cy.material);
+	else if (comp->obj->type == OBJ_CONE)
+		return (comp->obj->shape.co.material);
+	return (material());
+}
+
+static void	apply_texture_mapping(t_comps *comp)
+{
+	t_material	mat;
+	t_tuple		local_point;
+
+	mat = get_material(comp);
+	if (!mat.has_bump_map && !mat.has_normal_map)
+		return ;
+	local_point = get_local_point(comp);
+	if (mat.has_bump_map && mat.bump_map != NULL)
+		comp->normalv = perturb_normal_with_bump(mat, comp->normalv,
+				local_point, comp->obj->type);
+	if (mat.has_normal_map && mat.normal_map != NULL)
+		comp->normalv = apply_normal_map(mat, comp->normalv,
+				local_point, comp->obj->type);
 }
 
 t_comps	*prepare_computations(t_inters *intersection, t_ray ray, t_inters *intersections)

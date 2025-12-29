@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mohchaib <mohchaib@student.42.fr>          +#+  +:+       +#+         #
+#    By: amn <amn@student.42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/01/01 00:00:00 by amn700            #+#    #+#              #
-#    Updated: 2025/12/25 15:45:38 by mohchaib         ###   ########.fr        #
+#    Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -73,8 +73,6 @@ SRCS = $(SRC_DIR)/main_bonus.c \
 	   $(SRC_DIR)/lighting/light_and_shades_bonus.c \
 	   $(SRC_DIR)/rendering/render_bonus.c \
 	   $(SRC_DIR)/rendering/image_export_bonus.c \
-	   $(SRC_DIR)/rendering/color_conversion_bonus.c \
-	   $(SRC_DIR)/rendering/coordinate_conversion_bonus.c \
 	   $(SRC_DIR)/parsing/parsing_bonus.c \
 	   $(SRC_DIR)/parsing/validators_bonus.c \
 	   $(SRC_DIR)/parsing/field_parsers_bonus.c \

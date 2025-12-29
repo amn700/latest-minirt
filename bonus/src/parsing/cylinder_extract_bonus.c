@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cylinder_extract_bonus.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/24 03:46:12 by mac              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static void	setup_cylinder_data(t_cylinder *cl, char **fields, int field_count)
 	cl->minimum = -height / 2.0;
 	cl->maximum = height / 2.0;
 	cl->trans = multiply_matrix(translation(x, y, z), \
-		multiply_matrix(align_y_to_vector(cl->axis), scaling(radius, height / 2.0, radius)));
+		multiply_matrix(align_y_to_vector(cl->axis), scaling(radius, 1, radius)));
 	if (field_count >= 13)
 	{
 		cl->closed = (ft_atoi(fields[9]) == 1);

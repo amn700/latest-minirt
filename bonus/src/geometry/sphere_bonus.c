@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/15 18:36:00 by amn              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,28 @@
 
 t_material	material(void)
 {
-	return ((t_material){
-		.color = {1, 1, 1, 0},
-		.ambient = 0.3,
-		.diffuse = 0.9,
-		.specular = 0.9,
-		.reflective = 0.0,
-		.shininess = 200.0,
-		.transparency = 0.0,
-		.refract_index = 1.0,
-		.bump_map = NULL,
-		.normal_map = NULL,
-		.bump_strength = 0.5,
-		.has_bump_map = false,
-		.has_normal_map = false
-	});
+	t_material	mat;
+
+	mat.color = (t_tuple){1, 1, 1, 0};
+	mat.ambient = 0.1;
+	mat.diffuse = 0.9;
+	mat.specular = 0.9;
+	mat.reflective = 0.0;
+	mat.shininess = 200.0;
+	mat.transparency = 0.0;
+	mat.refract_index = 1.0;
+	mat.pattern.a = (t_tuple){0, 0, 0, 0};
+	mat.pattern.b = (t_tuple){0, 0, 0, 0};
+	mat.pattern.at = NULL;
+	mat.pattern.has_transform = false;
+	mat.bump_map = NULL;
+	mat.normal_map = NULL;
+	mat.color_texture = NULL;
+	mat.bump_strength = 0.5;
+	mat.has_bump_map = false;
+	mat.has_normal_map = false;
+	mat.has_color_texture = false;
+	return (mat);
 }
 
 t_sphere	sphere(void)

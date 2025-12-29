@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/26 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/26 00:00:00 by amn              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,12 +95,14 @@ bool	load_material_textures(t_material *material, char **params, mlx_t *mlx)
 	char	*path;
 	bool	saw_bump;
 	bool	saw_normal;
+	bool	saw_texture;
 
 	if (!material || !params)
 		return (false);
 	i = 0;
 	saw_bump = false;
 	saw_normal = false;
+	saw_texture = false;
 	material->bump_strength = 0.5f;
 	while (params[i])
 	{
@@ -158,6 +160,25 @@ bool	load_material_textures(t_material *material, char **params, mlx_t *mlx)
 				return (false);
 			}
 		}
+		else if (ft_strncmp(params[i], "texture:", 8) == 0)
+		{
+			if (saw_texture)
+			{
+				printf("Error: Duplicate color texture parameter\n");
+				return (false);
+			}
+			if (!parse_texture_path(params[i], &path))
+			{
+				printf("Error: Invalid texture path in '%s'\n", params[i]);
+				return (false);
+			}
+			material->color_texture = load_texture(path, mlx);
+			free(path);
+			if (!material->color_texture)
+				return (false);
+			material->has_color_texture = true;
+			saw_texture = true;
+		}
 		i++;
 	}
 	return (true);
@@ -181,5 +202,11 @@ void	free_material_textures(t_material *material)
 		mlx_delete_texture(material->normal_map);
 		material->normal_map = NULL;
 		material->has_normal_map = false;
+	}
+	if (material->color_texture)
+	{
+		mlx_delete_texture(material->color_texture);
+		material->color_texture = NULL;
+		material->has_color_texture = false;
 	}
 }

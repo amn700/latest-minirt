@@ -26,7 +26,8 @@ static t_lighting_components	compute_lighting_components(t_material material, \
 	t_tuple					color;
 
 	color = material.color;
-	if (material.pattern.at)
+	// Only use pattern if the function pointer is explicitly set and valid
+	if (material.pattern.at != NULL)
 	{
 		t_tuple pos = position;
 		if (material.pattern.has_transform)

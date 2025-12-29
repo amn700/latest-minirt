@@ -28,6 +28,9 @@ t_tuple plane_normal_at(t_plane pl)
 bool    intersect_plane(t_plane *pl, t_ray ray, t_inters **intersections, \
 		t_object *obj)
 {
+    t_inters *new_inters;
+    float t;
+
     (void)pl;
     // In object space, plane is at y=0 with normal (0,1,0)
     // Check if ray is parallel to the plane
@@ -35,9 +38,9 @@ bool    intersect_plane(t_plane *pl, t_ray ray, t_inters **intersections, \
         return true; // No intersections, ray is parallel
     
     // Calculate intersection t where ray hits y=0
-    float t = -ray.origin.y / ray.direction.y;
+    t = -ray.origin.y / ray.direction.y;
     
-    t_inters *new_inters = new_intersection(t, obj);
+    new_inters = new_intersection(t, obj);
     if (!new_inters)
         return false;
     

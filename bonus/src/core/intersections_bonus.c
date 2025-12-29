@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   intersections_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/22 22:38:24 by mac              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,8 +96,8 @@ bool	intersect_world_shadow(t_world world, t_ray ray, float max_distance)
 		current = intersections;
 		while (current)
 		{
-			// Ignore self-intersections and require a strictly positive hit
-			if (current->t > EPSILON && current->t < max_distance)
+			// Check for shadow blockers
+			if (current->t >= 0 && current->t < max_distance)
 			{
 				while (intersections)
 				{

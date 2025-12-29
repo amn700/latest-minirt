@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cylinder_intersect_bonus.c                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/23 01:28:19 by mac              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static bool	add_cylinder_intersection(t_object *obj, float t, float y, \
 
 	if (t < EPSILON)
 		return (false);
-	if (y <= obj->shape.cy.minimum || y >= obj->shape.cy.maximum)
+	if (y < obj->shape.cy.minimum || y > obj->shape.cy.maximum)
 		return (false);
 	inters = new_intersection(t, obj);
 	if (!inters)

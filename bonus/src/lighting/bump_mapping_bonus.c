@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/26 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/26 00:00:00 by amn              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,4 +193,39 @@ t_tuple	apply_normal_map(t_material material, t_tuple normal,
 	world_normal = add_tuple(tuple_scalar_mult(normal, 1.0f - material.bump_strength),
 			tuple_scalar_mult(world_normal, material.bump_strength));
 	return (normalizing_vector(world_normal));
+}
+
+/*
+ * Sample RGB color from color texture
+ * Returns color tuple with values in range [0.0, 1.0]
+ */
+t_tuple	sample_color_from_texture(mlx_texture_t *texture, float u, float v)
+{
+	uint32_t	x;
+	uint32_t	y;
+	uint32_t	index;
+	uint8_t		r;
+	uint8_t		g;
+	uint8_t		b;
+
+	// Clamp UV to [0, 1] range to prevent out-of-bounds access
+	if (u < 0.0f)
+		u = 0.0f;
+	if (u > 1.0f)
+		u = 1.0f;
+	if (v < 0.0f)
+		v = 0.0f;
+	if (v > 1.0f)
+		v = 1.0f;
+	x = (uint32_t)(u * (texture->width - 1));
+	y = (uint32_t)((1.0f - v) * (texture->height - 1));  // Flip V for correct orientation
+	if (x >= texture->width)
+		x = texture->width - 1;
+	if (y >= texture->height)
+		y = texture->height - 1;
+	index = (y * texture->width + x) * 4;
+	r = texture->pixels[index + 0];
+	g = texture->pixels[index + 1];
+	b = texture->pixels[index + 2];
+	return ((t_tuple){r / 255.0f, g / 255.0f, b / 255.0f, 0});
 }
