@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/03 06:11:16 by amn              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,24 @@ static t_tuple	get_material_contribution(t_comps *comp, t_light *light, \
 	return ((t_tuple){0, 0, 0, 0});
 }
 
+static t_tuple	get_ambient_contribution(t_comps *comp, t_tuple ambient_color)
+{
+	t_material	mat;
+	t_tuple		color_at_point;
+
+	if (comp->obj->type == OBJ_SPHERE)
+		mat = comp->obj->shape.sp.material;
+	else if (comp->obj->type == OBJ_PLANE)
+		mat = comp->obj->shape.pl.material;
+	else if (comp->obj->type == OBJ_CYLINDER)
+		mat = comp->obj->shape.cy.material;
+	else
+		return ((t_tuple){0, 0, 0, 0});
+	color_at_point = mat.color;
+	return (hadamard_product(tuple_scalar_mult(color_at_point, mat.ambient), \
+		ambient_color));
+}
+
 t_tuple	shade_hit(t_world world, t_comps *comp)
 {
 	t_tuple	final_color;
@@ -48,13 +66,13 @@ t_tuple	shade_hit(t_world world, t_comps *comp)
 	bool	in_shadow;
 	t_tuple	light_contribution;
 
-	final_color = (t_tuple){0, 0, 0, 0};
+	final_color = get_ambient_contribution(comp, world.ambient_color);
 	light = world.lights;
 	while (light)
 	{
 		in_shadow = is_shadowed(world, comp->over_point, light);
 		light_contribution = get_material_contribution(comp, light, \
-			in_shadow, world.ambient_color);
+			in_shadow, (t_tuple){0, 0, 0, 0});
 		final_color = add_tuple(final_color, light_contribution);
 		light = light->next;
 	}

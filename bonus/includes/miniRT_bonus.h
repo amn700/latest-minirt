@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 00:00:00 by amn700            #+#    #+#             */
-/*   Updated: 2025/12/14 23:01:57 by amn              ###   ########.fr       */
+/*   Updated: 2025/12/30 18:14:30 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,19 @@ t_tuple		checkers_at(t_pattern pattern, t_tuple point);
 void	free_objects_and_lights(t_data *data);
 // # define M_PI		3.14159265358979323846
 
+typedef enum e_state
+{
+    FRONT_PAGE,
+    RENDERING,
+    WAIT_INPUT,
+    DISPLAY
+} t_state;
+
+
 typedef struct s_data
 {
+    // t_state     state;
+    // uint32_t    rendered_lines;
 	t_ambient_light	ambl;
 	t_camera		cam;
 	t_light			*light;
@@ -57,6 +68,7 @@ typedef struct s_data
 	t_world			world;
 	mlx_t			*ptr;
 	mlx_image_t		*img;
+	mlx_image_t		*front;
 }	t_data;
 
 #endif

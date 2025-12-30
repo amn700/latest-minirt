@@ -1,0 +1,17 @@
+A 0.3 255,255,255
+C 0,6,-12 0,-0.2,1 70
+L 0,8,-10 0.9 255,255,255
+
+pl 0,0,0 0,1,0 150,150,150 ref:0.3 pat:checkers pa:40:40:40 pb:220:220:220
+
+# Ice cream cone base - brown waffle cone with checkerboard pattern
+co 0,0,0.5 0,1,0 2.5 3.5 0 180,120,60 texture:../z_textures/cream_cone.png
+
+# Scoop 1 - strawberry (left bottom) - pink with ring pattern
+sp -0.8 ,3.8 ,0    1.9 255,182,193 pat:ring pa:255:150:170 pb:255:80:120 pscale:0.15:0.25:0.15
+
+# Scoop 2 - mint chocolate chip (right bottom) - light green with stripe pattern  
+sp  0.8 ,3.8 ,0    1.9 152,251,152 pat:stripe pa:152:251:152 pb:90:50:20 pscale:0.15:0.15:0.15
+ 
+# Scoop 3 - chocolate (top center) - brown with checkerboard pattern
+sp  0   ,4.5   ,0.5     1.8 160,82,45 pat:checkers pa:139:69:19 pb:210:140:70 pscale:0.15:0.15:0.15

@@ -1,0 +1,6 @@
+A 0.3 255,255,255
+C 0,2,-10 0,0,1 60
+L 5,5,-5 0.8 255,255,255
+
+# Plane with sea texture
+pl 0,0,0 0,1,0 200,200,200 bump:../z_textures/sea.png bump_strength:0.5

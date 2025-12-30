@@ -1,0 +1,12 @@
+A 0.3 255,255,255
+C 0,4,-12 0,0,1 70
+L 5,10,-5 0.8 255,255,255
+
+pl 0,0,0 0,1,0 1,68,33
+#texture:../z_textures/zlij.png texture_strength:1.0
+# sp 0,3,-5 2.0 200,200,200 texture:../z_textures/8ball.png texture_strength:1.0
+# cy 0,3,-5 0.5 1 1 100,100,255 texture:../z_textures/wood.png texture_strength:1.0
+# sp 5,3,0 1.5 255,100,100 texture:../z_textures/sea.png texture_strength:1.0
+# sp -5,3,0 1.5 100,255,100 texture:../z_textures/metal.png texture_strength:1.0
+# sp 0,3,-5 1.5 100,100,255 
+#texture:../z_textures/Texturelabs_Metal_243S.png texture_strength:1.0

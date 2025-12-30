@@ -31,7 +31,7 @@ t_tuple lighting(t_material material, t_light light, t_tuple position, t_tuple e
     }
     else
     {
-        diffuse = tuple_scalar_mult(tuple_scalar_mult(effective_color, material.diffuse), ldn);
+        diffuse = tuple_scalar_mult(tuple_scalar_mult(effective_color, material.diffuse), ldn * light.brightness);
         
         t_tuple reflectv = reflect(negate_tuple(lightv), normalv);
         float rde = vecs_dot_product(reflectv, eyev);
@@ -41,7 +41,7 @@ t_tuple lighting(t_material material, t_light light, t_tuple position, t_tuple e
         else
         {
             float factor = pow(rde, material.shininess);
-            specular = tuple_scalar_mult(tuple_scalar_mult(light.color, material.specular), factor);
+            specular = tuple_scalar_mult(tuple_scalar_mult(tuple_scalar_mult(light.color, light.brightness), material.specular), factor);
         }
     }
     t_tuple result = add_tuple(add_tuple(ambient, diffuse), specular);

@@ -1,0 +1,71 @@
+
+# ---------------- Ambient ----------------\
+A 0.15 255,255,255
+# ---------------- Camera -----------------\
+# Cinematic wide shot\
+C 0,7,-18 0,-0.12,1 75
+# ---------------- Lights -----------------\
+# Key\
+l 10,18,-15 0.85 255,255,255
+# Rim light\
+l -12,14,-5 0.45 180,220,255
+# Warm fill\
+l 6,10,10 0.35 255,200,170
+# Overhead accent\
+l 0,20,5 0.25 200,255,220
+# ---------------- Floor ------------------\
+# Reflective patterned floor (depth amplifier)\
+pl 0,0,0 0,1,0 200,200,200 ref:0.35 pat:checkers pa:1:68:33 pb:220:220:220 pscale:1.5:1.5:1.5
+# ---------------- Central Glass Sphere ----------------\
+# Absolute recursion stress test\
+sp 0,4,4 4.0 220,240,255 refr:0.92:1.52 ref:0.08 shine:0.95:600
+
+# ---------------- Inner Mirror Sphere -----------------\
+# Nested reflection inside refraction\
+
+sp 0,4,4 1.6 200,200,200 ref:0.9 shine:0.98:800
+# ---------------- Side Mirror Orbs --------------------\
+sp -9,2.8,7 2.4 210,210,210 ref:0.85 shine:0.9:500
+sp  9,2.8,7 2.4 210,210,210 ref:0.85 shine:0.9:500
+# ---------------- Matte Color Anchors -----------------\
+# Color stability under mixed lighting\
+sp -5,2,12 2.0 70,120,220 shine:0.3:64
+sp  5,2,12 2.0 70,120,220  shine:0.3:64
+# ---------------- Cylinder Ring -----------------------\
+# Axis math + caps\
+cy -12,0,16 0,1,0 1.8 14.0 1 120,100,80 shine:0.4:96
+cy -8,0,16  0,1,0 1.8 10.0 1 120,100,80 shine:0.4:96
+cy -4,0,16  0,1,0 1.8 6.0 1 120,100,80 shine:0.4:96
+cy 4,0,16   0,1,0 1.8 6.0 1 120,100,80 shine:0.4:96
+cy 8,0,16   0,1,0 1.8 10.0 1 120,100,80 shine:0.4:96
+cy 12,0,16  0,1,0 1.8 14.0 1 120,100,80 shine:0.4:96
+
+# ---------------- Tilted Sculptures -------------------\
+# Arbitrary axis cylinders\
+cy -6,1,6 0.4,1,0.2 1.5 5.0 1 90,130,140 shine:0.6:180
+cy  6,1,6 -0.3,1,0.3 1.5 5.0 1 90,130,140 shine:0.6:180
+
+# ---------------- Cones (Bonus Flex) ------------------\
+# Sharp normals near tips\
+
+# # Moved cones closer, raised, and with more color contrast
+co -7,2,-4 0,-1,0 3.0 6.0 1 200,80,80 shine:0.5:128 pat:ring pa:153:0:0 pb:255:128:0 pscale:0.2:0.2:0.2 
+co  7,2,-4 0,-1,0 3.0 6.0 1 80,80,200 shine:0.5:128 pat:ring pa:153:0:0 pb:255:128:0 pscale:0.2:0.2:0.2 
+
+# # Moved cones closer, raised, and with more color contrast
+co -3,0,6 0,1,0 3.0 6.0 0 80,200,80 shine:0.5:128 pat:checkers pa:0:153:153 pb:0:204:204 pscale:0.2:0.2:0.2 
+co  3,0,6 0,1,0 3.0 6.0 0 200,200,80 shine:0.5:128 pat:checkers pa:0:153:153 pb:0:204:204 pscale:0.2:0.2:0.2 
+
+# ---------------- Patterned Back Wall -----------------\
+# Pattern projection sanity check\  
+pl 0,0,22 0,0,-1 180,180,180 pat:ring pa:30:30:30 pb:220:220:220 pscale:0.8:0.8:0.8 prot_y:90
+# ===============================================================\
+# EXPECTED RESULT:\
+# - Clean reflections without noise\
+# - Correct light color blending\
+# - No shadow acne\
+# - Stable refraction edges\
+# - Perfect symmetry\
+#\
+# This scene is not forgiving.\
+# ===============================================================\

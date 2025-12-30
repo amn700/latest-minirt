@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/03 01:39:12 by amn              ###   ########.fr       */
+/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ static bool	extractor(char *line, t_data *data, t_parser *parser)
 
 	i = 0;
 	skip_spaces(line, &i);
+	if (line[i] == '\0' || line[i] == '#')
+		return (true);
 	if (line[i] == 'A')
 		return (extract_ambient_light(line + i, data, parser));
 	else if (line[i] == 'C')
@@ -44,6 +46,11 @@ static bool	extractor(char *line, t_data *data, t_parser *parser)
 		return (plane_extract(line + i, data));
 	else if (ft_strncmp(line + i, "cy", 2) == 0)
 		return (cylinder_extract(line + i, data));
+	else
+	{
+		printf("Error: Unrecognized line format - expected A, C, L, sp, pl, or cy\n");
+		return (false);
+	}
 	return (true);
 }
 
