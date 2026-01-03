@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/02 22:48:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 10:45:49 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,6 @@ t_tuple	multiply_matrix_by_tuple(t_matrix m, t_tuple v)
 	new.mtrx[3][0] = v.w;
 	new.size = 4;
 	new = multiply_matrix(m, new);
-	return ((t_tuple){new.mtrx[0][0], new.mtrx[1][0], \
-		new.mtrx[2][0], new.mtrx[3][0]});
+	return ((t_tuple){new.mtrx[0][0], new.mtrx[1][0],
+			new.mtrx[2][0], new.mtrx[3][0]});
 }

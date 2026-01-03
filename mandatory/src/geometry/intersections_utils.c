@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/02 22:48:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 11:47:15 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,19 @@ void	ft_add_intersection(t_inters **lst, t_inters *new)
 	ptr->next = new;
 }
 
+static void	swap_floats(float *a, float *b)
+{
+	float	temp;
+
+	temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
 void	sort_intersections(t_inters **lst)
 {
 	t_inters	*i1;
 	t_inters	*i2;
-	float		temp_t;
 	t_object	*temp_obj;
 
 	if (!lst || !*lst)
@@ -59,11 +67,9 @@ void	sort_intersections(t_inters **lst)
 		{
 			if (i1->t > i2->t)
 			{
-				temp_t = i1->t;
+				swap_floats(&i1->t, &i2->t);
 				temp_obj = i1->object;
-				i1->t = i2->t;
 				i1->object = i2->object;
-				i2->t = temp_t;
 				i2->object = temp_obj;
 			}
 			i2 = i2->next;

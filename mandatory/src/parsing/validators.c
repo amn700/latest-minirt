@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2026/01/03 09:01:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 11:47:25 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,28 @@ bool	i_field_validation(char *str)
 	return (true);
 }
 
+bool	f_validator_core(char *str, int *i, int *dot_count, int *digit_count)
+{
+	while (str[*i])
+	{
+		if (str[*i] >= '0' && str[*i] <= '9')
+		{
+			(*digit_count)++;
+			(*i)++;
+		}
+		else if (str[*i] == '.')
+		{
+			(*dot_count)++;
+			if (*dot_count > 1)
+				return (false);
+			(*i)++;
+		}
+		else
+			return (false);
+	}
+	return (true);
+}
+
 bool	f_field_validation(char *str)
 {
 	int		i;
@@ -41,23 +63,8 @@ bool	f_field_validation(char *str)
 	digit_count = 0;
 	if (str[i] == '-' || str[i] == '+')
 		i++;
-	while (str[i])
-	{
-		if (str[i] >= '0' && str[i] <= '9')
-		{
-			digit_count++;
-			i++;
-		}
-		else if (str[i] == '.')
-		{
-			dot_count++;
-			if (dot_count > 1)
-				return (false);
-			i++;
-		}
-		else
-			return (false);
-	}
+	if (!f_validator_core(str, &i, &dot_count, &digit_count))
+		return (false);
 	if (digit_count == 0)
 		return (false);
 	return (true);

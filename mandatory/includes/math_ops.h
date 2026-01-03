@@ -3,15 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   math_ops.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/24 03:46:12 by mac              ###   ########.fr       */
+/*   Updated: 2026/01/03 10:03:18 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MATH_H
-# define MATH_H
+#ifndef MATH_OPS_H
+# define MATH_OPS_H
 
 # include "types.h"
 

@@ -6,40 +6,11 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2026/01/03 09:01:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 11:59:35 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/miniRT.h"
-
-float	ft_atof(char *str)
-{
-	float	result;
-	float	sign;
-	float	decimal_place;
-
-	result = 0.0f;
-	sign = 1.0f;
-	decimal_place = 0.1f;
-	if (*str == '-')
-	{
-		sign = -1.0f;
-		str++;
-	}
-	else if (*str == '+')
-		str++;
-	while (*str >= '0' && *str <= '9')
-		result = result * 10.0f + (*str++ - '0');
-	if (*str++ == '.')
-	{
-		while (*str >= '0' && *str <= '9')
-		{
-			result += (*str++ - '0') * decimal_place;
-			decimal_place *= 0.1f;
-		}
-	}
-	return (result * sign);
-}
 
 void	skip_spaces(char *line, int *i)
 {
@@ -59,6 +30,21 @@ bool	check_fields_num(char **fields, int n)
 	return (true);
 }
 
+bool	float_val_core(char **fields, float min, float max)
+{
+	int	i;
+
+	i = 0;
+	while (i < 3)
+	{
+		if (!f_field_validation(fields[i])
+			|| !f_range_validator(min, max, fields[i]))
+			return (false);
+		i++;
+	}
+	return (true);
+}
+
 bool	tuple_validator(char **fields, bool b, float min, float max)
 {
 	int	i;
@@ -70,22 +56,15 @@ bool	tuple_validator(char **fields, bool b, float min, float max)
 	{
 		while (i < 3)
 		{
-			if (!i_field_validation(fields[i]) || \
-				!i_range_validator(min, max, fields[i]))
+			if (!i_field_validation(fields[i])
+				|| !i_range_validator(min, max, fields[i]))
 				return (false);
 			i++;
 		}
 	}
 	else
-	{
-		while (i < 3)
-		{
-			if (!f_field_validation(fields[i]) || \
-				!f_range_validator(min, max, fields[i]))
-				return (false);
-			i++;
-		}
-	}
+		if (!float_val_core(fields, min, max))
+			return (false);
 	return (true);
 }
 

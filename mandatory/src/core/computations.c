@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/09 07:55:41 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 10:28:00 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,14 @@ static void	get_normal_vector(t_comps *new)
 		new->normalv = cylinder_normal_at(new->obj->shape.cy, new->point);
 }
 
+void	comp_init(t_inters *intersection, t_ray ray, t_comps *new)
+{
+	new->t = intersection->t;
+	new->obj = intersection->object;
+	new->point = position(ray, new->t);
+	new->eyev = negate_tuple(ray.direction);
+}
+
 t_comps	*prepare_computations(t_inters *intersection, t_ray ray)
 {
 	t_comps	*new;
@@ -47,24 +55,21 @@ t_comps	*prepare_computations(t_inters *intersection, t_ray ray)
 	new = new_comps();
 	if (!new)
 		return (NULL);
-	new->t = intersection->t;
-	new->obj = intersection->object;
-	new->point = position(ray, new->t);
-	new->eyev = negate_tuple(ray.direction);
+	comp_init(intersection, ray, new);
 	get_normal_vector(new);
 	original_normal = new->normalv;
 	if (vecs_dot_product(new->normalv, new->eyev) < 0)
 	{
 		new->inside = true;
 		new->normalv = negate_tuple(new->normalv);
-		new->over_point = add_tuple(new->point, \
-			tuple_scalar_mult(new->normalv, EPSILON));
+		new->over_point = add_tuple(new->point, tuple_scalar_mult(new->normalv,
+					EPSILON));
 	}
 	else
 	{
 		new->inside = false;
-		new->over_point = add_tuple(new->point, \
-			tuple_scalar_mult(original_normal, EPSILON));
+		new->over_point = add_tuple(new->point,
+				tuple_scalar_mult(original_normal, EPSILON));
 	}
 	return (new);
 }

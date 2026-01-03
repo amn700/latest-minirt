@@ -6,18 +6,27 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/02 22:48:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 12:02:02 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/miniRT.h"
 
-typedef struct s_parser
+char	**ft_split_rt(char const *s, char *charset)
 {
-	bool	ambl_set;
-	bool	cam_set;
-	bool	light_set;
-}	t_parser;
+	int		size;
+	char	**matrix;
+
+	if (!s)
+		return (NULL);
+	size = count_words((char *)s, charset);
+	matrix = malloc((size + 1) * sizeof(char *));
+	if (matrix == NULL)
+		return (NULL);
+	if (!populate(matrix, (char *)s, charset))
+		return (NULL);
+	return (matrix);
+}
 
 bool	extract_ambient_light(char *line, t_data *data, t_parser *parser)
 {

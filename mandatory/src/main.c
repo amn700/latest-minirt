@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mohchaib <mohchaib@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/25 15:45:13 by mohchaib         ###   ########.fr       */
+/*   Updated: 2026/01/03 10:25:56 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/miniRT.h"
 
- void	key_hook(mlx_key_data_t keydata, void *param)
+void	key_hook(mlx_key_data_t keydata, void *param)
 {
 	t_data	*data;
 
@@ -26,7 +26,7 @@
 	}
 }
 
- int	initialize_mlx(t_data *data, t_camera cam)
+int	initialize_mlx(t_data *data, t_camera cam)
 {
 	data->ptr = mlx_init((int)cam.h_view, (int)cam.v_view, "miniRT", false);
 	if (!data->ptr)
@@ -44,7 +44,7 @@
 	return (1);
 }
 
- int	setup_world(t_data *data, t_camera *cam)
+int	setup_world(t_data *data, t_camera *cam)
 {
 	data->world = new_world();
 	data->world.objects = data->object;

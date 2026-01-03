@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/02 22:48:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 10:45:49 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ t_matrix	inverse_matrix(t_matrix matrix)
 		col = 0;
 		while (col < matrix.size)
 		{
-			inverted.mtrx[col][row] = compute_cofactor(matrix, row, col) \
+			inverted.mtrx[col][row] = compute_cofactor(matrix, row, col)
 				/ orginal_deter;
 			col++;
 		}

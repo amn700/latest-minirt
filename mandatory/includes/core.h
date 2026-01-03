@@ -21,7 +21,8 @@ void		ft_add_object(t_object **lst, t_object *new);
 t_light		*new_light(t_tuple point, t_tuple color);
 void		ft_add_light(t_light **lst, t_light *new);
 t_inters	*intersect_world(t_world world, t_ray ray);
-bool		intersect_world_shadow(t_world world, t_ray ray, float max_distance);
+bool		intersect_world_shadow(t_world world, t_ray ray,
+				float max_distance);
 t_comps		*prepare_computations(t_inters *intersection, t_ray ray);
 t_camera	camera(double hsize, double vsize, double field_of_view);
 t_matrix	view_transformation(t_tuple from, t_tuple to, t_tuple up);

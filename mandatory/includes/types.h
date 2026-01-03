@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/02 22:48:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 11:30:22 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,21 @@
 
 # include <stdint.h>
 # include <stdbool.h>
+
+typedef struct s_parser
+{
+	bool	ambl_set;
+	bool	cam_set;
+	bool	light_set;
+}	t_parser;
+
+typedef struct s_quadratic
+{
+	float	a;
+	float	b;
+	float	c;
+	float	discriminant;
+}	t_quadratic;
 
 typedef struct s_matrix
 {

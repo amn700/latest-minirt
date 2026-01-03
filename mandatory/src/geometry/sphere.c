@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/02 22:48:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 10:25:56 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ t_tuple	sphere_normal_at(t_sphere sp, t_tuple p)
 	inverse = inverse_matrix(sp.trans);
 	object_point = multiply_matrix_by_tuple(inverse, p);
 	object_normal = substract_tuple(object_point, (t_tuple){0, 0, 0, 1});
-	world_normal = multiply_matrix_by_tuple(transposing_matrix(inverse), \
-		object_normal);
+	world_normal = multiply_matrix_by_tuple(transposing_matrix(inverse),
+			object_normal);
 	world_normal.w = 0;
 	return (normalizing_vector(world_normal));
 }

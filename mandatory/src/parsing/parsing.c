@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/01 00:00:00 by amn700            #+#    #+#             */
-/*   Updated: 2025/12/07 13:24:58 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 11:17:44 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,14 @@
 /*
 	⚠️ Things to keep in mind for parsing:
 
-	Identifiers (A, C, L, sp, pl, cy) must be followed by the right number of arguments.
+	Identifiers (A, C, L, sp, pl, cy) must be followed by
+	the right number of arguments.
 
 	Values (coords, colors, FOV, ratios) should be valid and within range.
 */
 
-
 /*
-Your program must take as its first argument a scene description file with the .rt
+Your program must take as first argument a scene file with the .rt
 extension.
 ◦ Each type of element can be separated by one or more line breaks.
 ◦ Each type of information from an element can be separated by one or more

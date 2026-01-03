@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/02 22:48:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 10:45:49 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ bool	f_equal(float a, float b)
 
 bool	tuple_comparison(t_tuple a, t_tuple b)
 {
-	return (f_equal(a.x, b.x) && f_equal(a.y, b.y) \
+	return (f_equal(a.x, b.x) && f_equal(a.y, b.y)
 		&& f_equal(a.z, b.z) && f_equal(a.w, b.w));
 }
 

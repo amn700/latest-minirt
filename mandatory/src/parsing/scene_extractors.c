@@ -6,25 +6,11 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 11:33:37 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/miniRT.h"
-
-typedef struct s_parser
-{
-	bool	ambl_set;
-	bool	cam_set;
-	bool	light_set;
-}	t_parser;
-
-bool	extract_ambient_light(char *line, t_data *data, t_parser *parser);
-bool	extract_camera(char *line, t_data *data, t_parser *parser);
-bool	extract_light(char *line, t_data *data, t_parser *parser);
-bool	sphere_extract(char *line, t_data *data);
-bool	plane_extract(char *line, t_data *data);
-bool	cylinder_extract(char *line, t_data *data);
 
 static bool	extractor(char *line, t_data *data, t_parser *parser)
 {
@@ -48,7 +34,7 @@ static bool	extractor(char *line, t_data *data, t_parser *parser)
 		return (cylinder_extract(line + i, data));
 	else
 	{
-		printf("Error: Unrecognized line format - expected A, C, L, sp, pl, or cy\n");
+		printf("Error: Unrecognized line - expected A, C, L, sp, pl, cy\n");
 		return (false);
 	}
 	return (true);
@@ -72,7 +58,8 @@ bool	extract_data(char *file, t_data *data)
 		if (!line)
 			break ;
 		if (!extractor(line, data, &parser))
-			return (free(line), close(fd),free_objects_and_lights(data), errors_map(3), false);
+			return (free(line), close(fd), free_objects_and_lights(data),
+				errors_map(3), false);
 		free(line);
 	}
 	close(fd);

@@ -68,8 +68,8 @@ SRCS = $(SRC_DIR)/main.c \
 	   $(SRC_DIR)/geometry/ray_utils.c \
 	   $(SRC_DIR)/geometry/intersections_utils.c \
 	   $(SRC_DIR)/lighting/phong_lighting.c \
-	   $(SRC_DIR)/lighting/light_and_shades.c \
 	   $(SRC_DIR)/rendering/render.c \
+	   $(SRC_DIR)/rendering/render_utils.c \
 	   $(SRC_DIR)/rendering/image_export.c \
 	   $(SRC_DIR)/parsing/parsing.c \
 	   $(SRC_DIR)/parsing/validators.c \

@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/02 22:48:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 10:25:10 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,21 +41,15 @@ t_camera	camera(double hsize, double vsize, double field_of_view)
 
 t_ray	ray_for_pixel(t_camera cam, double px, double py)
 {
-	double		xoffset;
-	double		yoffset;
-	double		world_x;
-	double		world_y;
 	t_matrix	inv;
 	t_tuple		pixel;
 	t_tuple		origin;
 	t_tuple		direction;
 
-	xoffset = (px + 0.5) * cam.pixel_size;
-	yoffset = (py + 0.5) * cam.pixel_size;
-	world_x = cam.half_width - xoffset;
-	world_y = cam.half_height - yoffset;
 	inv = inverse_matrix(cam.transform);
-	pixel = multiply_matrix_by_tuple(inv, (t_tuple){world_x, world_y, -1, 1});
+	pixel = multiply_matrix_by_tuple(inv, (t_tuple){cam.half_width - (px + 0.5)
+			* cam.pixel_size, cam.half_height - (py + 0.5) * cam.pixel_size, -1,
+			1});
 	origin = multiply_matrix_by_tuple(inv, (t_tuple){0, 0, 0, 1});
 	direction = normalizing_vector(substract_tuple(pixel, origin));
 	return ((t_ray){origin, direction});

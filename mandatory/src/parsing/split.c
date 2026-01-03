@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   split.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/03 12:01:41 by amn               #+#    #+#             */
+/*   Updated: 2026/01/03 12:01:50 by amn              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/miniRT.h"
 
 static char	*ft_strchr_local(const char *s, int c)
@@ -21,7 +33,7 @@ static void	free_split_matrix(char **matrix, int i)
 	free(matrix);
 }
 
-static int	count_words(char *str, char *charset)
+int	count_words(char *str, char *charset)
 {
 	int	i;
 	int	count;
@@ -62,7 +74,7 @@ static char	*ft_addstr(char *str, char *charset)
 	return (new);
 }
 
-static int	populate(char **matrix, char *str, char *charset)
+int	populate(char **matrix, char *str, char *charset)
 {
 	int	i;
 
@@ -86,20 +98,4 @@ static int	populate(char **matrix, char *str, char *charset)
 	}
 	matrix[i] = NULL;
 	return (1);
-}
-
-char	**ft_split_rt(char const *s, char *charset)
-{
-	int		size;
-	char	**matrix;
-
-	if (!s)
-		return (NULL);
-	size = count_words((char *)s, charset);
-	matrix = malloc((size + 1) * sizeof(char *));
-	if (matrix == NULL)
-		return (NULL);
-	if (!populate(matrix, (char *)s, charset))
-		return (NULL);
-	return (matrix);
 }

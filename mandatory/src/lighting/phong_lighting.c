@@ -1,50 +1,61 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   phong_lighting.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/01/03 11:36:49 by amn               #+#    #+#             */
+/*   Updated: 2026/01/03 11:53:10 by amn              ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/miniRT.h"
 
-t_light point_light(t_tuple point, t_tuple color)
+t_light	point_light(t_tuple point, t_tuple color)
 {
-    return (t_light){.color = color, .origin = point};
+	return ((t_light){.color = color, .origin = point});
 }
 
-t_tuple lighting(t_material material, t_light light, t_tuple position, t_tuple eyev, t_tuple normalv, bool in_shadow, t_tuple ambient_color)
+void	lighting_else(t_light_params params, t_light_vars *vars)
 {
-    // Ambient is independent of light source - only uses material color and ambient color
-    t_tuple ambient = hadamard_product(tuple_scalar_mult(material.color, material.ambient), ambient_color);
-    
-    // If in shadow, return only ambient lighting
-    if (in_shadow)
-    {
-        ambient.w = 0;
-        return ambient;
-    }
-    
-    // For diffuse and specular, we use effective_color (material * light color)
-    t_tuple effective_color = hadamard_product(material.color , light.color);
-    t_tuple lightv = normalizing_vector(substract_tuple(light.origin, position));
-    
-    float ldn = vecs_dot_product(lightv, normalv);
-    t_tuple diffuse;
-    t_tuple specular;
-    if (ldn < 0)
-    {
-        diffuse = (t_tuple){0, 0 ,0, 0};
-        specular = (t_tuple){0, 0 ,0, 0};
-    }
-    else
-    {
-        diffuse = tuple_scalar_mult(tuple_scalar_mult(effective_color, material.diffuse), ldn * light.brightness);
-        
-        t_tuple reflectv = reflect(negate_tuple(lightv), normalv);
-        float rde = vecs_dot_product(reflectv, eyev);
-        
-        if (rde <= 0)
-            specular = (t_tuple){0, 0 ,0, 0};
-        else
-        {
-            float factor = pow(rde, material.shininess);
-            specular = tuple_scalar_mult(tuple_scalar_mult(tuple_scalar_mult(light.color, light.brightness), material.specular), factor);
-        }
-    }
-    t_tuple result = add_tuple(add_tuple(ambient, diffuse), specular);
-    result.w = 0;  // Ensure w component is 0 for colors
-    return result;
+	vars->diffuse = tuple_scalar_mult(tuple_scalar_mult(vars->effective_color,
+				params.material.diffuse), vars->ldn * params.light.brightness);
+	vars->reflectv = reflect(negate_tuple(vars->lightv), params.normalv);
+	vars->rde = vecs_dot_product(vars->reflectv, params.eyev);
+	if (vars->rde <= 0)
+		vars->specular = (t_tuple){0, 0, 0, 0};
+	else
+	{
+		vars->factor = pow(vars->rde, params.material.shininess);
+		vars->specular = tuple_scalar_mult(tuple_scalar_mult(tuple_scalar_mult(
+						params.light.color, params.light.brightness),
+					params.material.specular), vars->factor);
+	}
+}
+
+t_tuple	lighting(t_light_params params)
+{
+	t_light_vars	vars;
+
+	vars.ambient = hadamard_product(tuple_scalar_mult(params.material.color,
+				params.material.ambient), params.ambient_color);
+	if (params.in_shadow)
+		return (vars.ambient.w = 0, vars.ambient);
+	vars.effective_color = hadamard_product(params.material.color,
+			params.light.color);
+	vars.lightv = normalizing_vector(substract_tuple(params.light.origin,
+				params.position));
+	vars.ldn = vecs_dot_product(vars.lightv, params.normalv);
+	if (vars.ldn < 0)
+	{
+		vars.diffuse = (t_tuple){0, 0, 0, 0};
+		vars.specular = (t_tuple){0, 0, 0, 0};
+	}
+	else
+		lighting_else(params, &vars);
+	vars.result = add_tuple(add_tuple(vars.ambient, vars.diffuse),
+			vars.specular);
+	vars.result.w = 0;
+	return (vars.result);
 }

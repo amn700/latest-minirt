@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   axis_align.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/24 00:00:00 by mac               #+#    #+#             */
-/*   Updated: 2025/12/24 03:46:12 by mac              ###   ########.fr       */
+/*   Updated: 2026/01/03 10:48:00 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,27 +56,21 @@ static t_matrix	quat_to_matrix(t_tuple q)
 	return (m);
 }
 
-/*
-** Get rotation matrix to align Y axis (0,1,0) to target vector
-** Uses quaternion rotation for smooth interpolation
-*/
 t_matrix	align_y_to_vector(t_tuple target_axis)
 {
-	t_tuple		v1;
-	t_tuple		v2;
 	float		dot;
 	float		angle;
 	t_tuple		rot_axis;
 	t_tuple		q;
 
-	v1 = (t_tuple){0, 1, 0, 0};
-	v2 = normalizing_vector(target_axis);
-	dot = vecs_dot_product(v1, v2);
+	dot = vecs_dot_product((t_tuple){0, 1, 0, 0},
+			normalizing_vector(target_axis));
 	if (fabs(dot - 1.0f) < EPSILON)
 		return (identity());
 	if (fabs(dot + 1.0f) < EPSILON)
 		return (scaling(1.0f, -1.0f, 1.0f));
-	rot_axis = normalizing_vector(vecs_cross_product(v1, v2));
+	rot_axis = normalizing_vector(vecs_cross_product((t_tuple){0, 1, 0, 0},
+				normalizing_vector(target_axis)));
 	angle = acosf(dot);
 	q = get_quaternion(rot_axis, angle);
 	return (quat_to_matrix(q));
