@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sphere_extract_bonus.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/24 03:46:12 by mac              ###   ########.fr       */
+/*   Updated: 2026/01/03 07:16:17 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ static void	setup_sphere_transform(t_sphere *sp, char **fields)
 	sp->center = (t_tuple){0, 0, 0, 1};
 	sp->trans = multiply_matrix(translation(x, y, z), \
 		scaling(radius, radius, radius));
+	sp->trans_inv = inverse_matrix(sp->trans);
 	sp->material.color.x = ft_atoi(fields[5]) / 255.0;
 	sp->material.color.y = ft_atoi(fields[6]) / 255.0;
 	sp->material.color.z = ft_atoi(fields[7]) / 255.0;

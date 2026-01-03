@@ -83,17 +83,17 @@ t_inters *intersect_world(t_world world, t_ray ray)
 	{
 		if (obj->type == OBJ_SPHERE)
 		{
-			t_ray transformed_ray = transform_ray(ray, inverse_matrix(obj->shape.sp.trans));
+			t_ray transformed_ray = transform_ray(ray, obj->shape.sp.trans_inv);
 			intersect_sphere(&obj->shape.sp, transformed_ray, &all_intersections);
 		}
 		else if (obj->type == OBJ_PLANE)
 		{
-			t_ray transformed_ray = transform_ray(ray, inverse_matrix(obj->shape.pl.trans));
+			t_ray transformed_ray = transform_ray(ray, obj->shape.pl.trans_inv);
 			intersect_plane(&obj->shape.pl, transformed_ray, &all_intersections);
 		}
 		else if (obj->type == OBJ_CYLINDER)
 		{
-			t_ray transformed_ray = transform_ray(ray, inverse_matrix(obj->shape.cy.trans));
+			t_ray transformed_ray = transform_ray(ray, obj->shape.cy.trans_inv);
 			intersect_cylinder(&obj->shape.cy, transformed_ray, &all_intersections);
 		}
 		obj = obj->next;

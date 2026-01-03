@@ -8,19 +8,16 @@ t_plane plane(void)
         .point = (t_tuple){0,0,0,1},
         .normal = (t_tuple){0,1,0,0},
         .trans = identity(),
+        .trans_inv = identity(),
         .material = material(),
     };
 }
 
 t_tuple plane_normal_at(t_plane pl)
 {
-    // Plane normal in object space is always (0, 1, 0)
     t_tuple object_normal = (t_tuple){0, 1, 0, 0};
-    
-    // Transform the normal using the inverse transpose
-    t_matrix inverse = inverse_matrix(pl.trans);
-    t_tuple world_normal = multiply_matrix_by_tuple(transposing_matrix(inverse), object_normal);
-    world_normal.w = 0; // Ensure it's a vector
+    t_tuple world_normal = multiply_matrix_by_tuple(transposing_matrix(pl.trans_inv), object_normal);
+    world_normal.w = 0;
     
     return normalizing_vector(world_normal);
 }

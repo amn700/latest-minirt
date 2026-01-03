@@ -21,6 +21,7 @@ t_cylinder cylinder(void)
         .diameter = 2,
         .height = INFINITY,
         .trans = identity(),
+        .trans_inv = identity(),
         .material = material(),
         .minimum = -INFINITY,
         .maximum = INFINITY,
@@ -99,18 +100,10 @@ bool    intersect_cylinder(t_cylinder *cyl, t_ray ray, t_inters **intersections)
 
 t_tuple cylinder_normal_at(t_cylinder cyl, t_tuple point)
 {
-    // Transform point to object space
-    t_matrix inverse = inverse_matrix(cyl.trans);
-    t_tuple object_point = multiply_matrix_by_tuple(inverse, point);
-    
-    // For a cylinder along Y axis, normal is perpendicular to Y
-    // At the caps (if implemented), normal would be (0, ±1, 0)
-    // On the sides, normal is (x, 0, z) in object space
+    t_tuple object_point = multiply_matrix_by_tuple(cyl.trans_inv, point);
     t_tuple object_normal = (t_tuple){object_point.x, 0, object_point.z, 0};
-    
-    // Transform normal back to world space using inverse transpose
-    t_tuple world_normal = multiply_matrix_by_tuple(transposing_matrix(inverse), object_normal);
-    world_normal.w = 0;  // Ensure it's a vector
+    t_tuple world_normal = multiply_matrix_by_tuple(transposing_matrix(cyl.trans_inv), object_normal);
+    world_normal.w = 0;
     
     return normalizing_vector(world_normal);
 }

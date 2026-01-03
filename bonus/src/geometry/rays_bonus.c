@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 09:30:52 by amn               #+#    #+#             */
-/*   Updated: 2025/12/09 07:39:11 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 07:16:17 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,6 +177,7 @@ t_sphere	sphere(void)
 {
 	return (t_sphere){
 		.trans = identity(),
+		.trans_inv = identity(),
 		.diam = 1,
 		.center = (t_tuple){0,0,0,1},
 		.material = material()};
@@ -186,6 +187,7 @@ t_sphere	glass_sphere(void)
 {
 	return (t_sphere){
 		.trans = identity(),
+		.trans_inv = identity(),
 		.diam = 1,
 		.center = (t_tuple){0,0,0,1},
 		.material = material(),
@@ -197,7 +199,7 @@ t_sphere	glass_sphere(void)
 t_sphere	sp_transform(t_matrix m, t_sphere sp)
 {
 	t_tuple new_center = multiply_matrix_by_tuple(m, sp.center);
-	return (t_sphere){.diam = sp.diam, .center = new_center, .material = sp.material, .trans = identity()};
+	return (t_sphere){.diam = sp.diam, .center = new_center, .material = sp.material, .trans = identity(), .trans_inv = identity()};
 }
 
 t_ray transform_ray(t_ray ray, t_matrix m)

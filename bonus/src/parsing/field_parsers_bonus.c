@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   field_parsers.c                                    :+:      :+:    :+:   */
+/*   field_parsers_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/02 22:48:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 09:01:42 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,10 +63,12 @@ bool	tuple_validator(char **fields, bool b, float min, float max)
 {
 	int	i;
 
+	if (!fields || !fields[0] || !fields[1] || !fields[2])
+		return (false);
 	i = 0;
 	if (b)
 	{
-		while (fields[i] && i < 3)
+		while (i < 3)
 		{
 			if (!i_field_validation(fields[i]) || \
 				!i_range_validator(min, max, fields[i]))
@@ -76,7 +78,7 @@ bool	tuple_validator(char **fields, bool b, float min, float max)
 	}
 	else
 	{
-		while (fields[i] && i < 3)
+		while (i < 3)
 		{
 			if (!f_field_validation(fields[i]) || \
 				!f_range_validator(min, max, fields[i]))

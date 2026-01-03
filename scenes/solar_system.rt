@@ -1,0 +1,63 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#                    SOLAR SYSTEM - Cinematic View
+# ═══════════════════════════════════════════════════════════════════════════
+# Sun at edge, planets in view, milky way backdrop
+
+# Low ambient for space feel
+A 0.5     255,255,255
+
+# Camera - looking at planets with sun at the left edge
+C 0,3,-50   0,0,1   60
+
+# ═══════════════════════════════════════════════════════════════════════════
+#                              LIGHTING
+# ═══════════════════════════════════════════════════════════════════════════
+# Sun light - positioned at the sun's visible edge
+L -30,0,20   1.0   255,220,180
+# Subtle fill from milky way
+l 20,10,-20   0.2   180,200,255
+
+# ═══════════════════════════════════════════════════════════════════════════
+#                         MILKY WAY BACKDROP
+# ═══════════════════════════════════════════════════════════════════════════
+# Space/milky way plane behind everything
+pl 0,0,50 0,0,1 1,1,1   texture:../solar_sys/space.png
+
+# ═══════════════════════════════════════════════════════════════════════════
+#                    THE SUN - Partial view at left edge
+# ═══════════════════════════════════════════════════════════════════════════
+# Large sun, mostly off-screen to the left
+sp -45,0,20   30   255,255,255   texture:../solar_sys/sun.png   bump:../solar_sys/sun.png   bump_strength:0.2
+
+# ═══════════════════════════════════════════════════════════════════════════
+#                    INNER PLANETS - Closer to sun
+# ═══════════════════════════════════════════════════════════════════════════
+# Mercury - tiny, closest
+sp -18,0,8   0.8   255,255,255   texture:../solar_sys/2k_mercury.png   bump:../solar_sys/2k_mercury.png   bump_strength:0.4
+
+# Venus - slightly bigger
+sp -12,-1,6   1.6   255,255,255   texture:../solar_sys/2k_venus_surface.png   bump:../solar_sys/2k_venus_surface.png   bump_strength:0.25
+
+# Earth - our blue marble
+sp -4,0,4   1.8   255,255,255   texture:../solar_sys/earth.png   bump:../bumps/8081_earthspec2k.png   bump_strength:0.3
+
+# Moon - beside Earth
+sp -2,1.2,2   0.5   255,255,255   texture:../z_textures/moonmap2k.png   bump:../z_textures/moonmap2k.png   bump_strength:0.5
+
+# Mars - red planet
+sp 4,-0.5,2   1.2   255,255,255   texture:../solar_sys/2k_mars.png   bump:../solar_sys/2k_mars.png   bump_strength:0.4
+
+# ═══════════════════════════════════════════════════════════════════════════
+#                    OUTER PLANETS - Gas Giants
+# ═══════════════════════════════════════════════════════════════════════════
+# Jupiter - massive
+sp 14,1,0   5.0   255,255,255   texture:../solar_sys/2k_jupiter.png   bump:../solar_sys/2k_jupiter.png   bump_strength:0.12
+
+# Saturn - ringed (no actual rings, but the texture shows bands)
+sp 26,-1,-2   4.2   255,255,255   texture:../solar_sys/2k_saturn.png   bump:../solar_sys/2k_saturn.png   bump_strength:0.1
+
+# Uranus - ice blue
+sp 36,0.5,-4   2.8   255,255,255   texture:../solar_sys/2k_uranus.png   bump:../solar_sys/2k_uranus.png   bump_strength:0.15
+
+# Neptune - deep blue, far right
+sp 45,0,-6   2.6   255,255,255   texture:../solar_sys/neptune.png   bump:../solar_sys/neptune.png   bump_strength:0.15

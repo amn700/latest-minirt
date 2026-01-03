@@ -1,0 +1,11 @@
+A 0.05    255,255,255
+
+C 0,0,-4   0,0,1   70
+
+l -3,3,-5   0.9   255,255,255
+
+# Earth
+sp 0,0,0   2   255,255,255   texture:../solar_sys/earth.png   bump:../bumps/8081_earthspec2k.png   bump_strength:1.0
+
+# Moon  
+sp 2.5,0.8,3   0.6   200,200,200   texture:../solar_sys/moon2.png   bump:../solar_sys/moon2.png   bump_strength:1.0

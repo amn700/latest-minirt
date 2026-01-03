@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   extraction_bonus.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/15 00:53:04 by mohchaib          #+#    #+#             */
-/*   Updated: 2025/12/24 03:46:12 by mac              ###   ########.fr       */
+/*   Updated: 2026/01/03 07:16:17 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -313,6 +313,7 @@ bool	sphere_extract(char *line, t_data *data)
 	
 	// Apply transformation: scale by radius, then translate to position
 	sp.trans = multiply_matrix(translation(x, y, z), scaling(radius, radius, radius));
+	sp.trans_inv = inverse_matrix(sp.trans);
 	
 	// Parse color
 	sp.material.color.x = ft_atoi(fields[5]) / 255.0;
@@ -366,6 +367,7 @@ bool	plane_extract(char *line, t_data *data)
 	// We need to rotate to match the given normal, then translate
 	t_matrix rotation = align_y_to_vector(pl.normal);
 	pl.trans = multiply_matrix(translation(x, y, z), rotation);
+	pl.trans_inv = inverse_matrix(pl.trans);
 	
 	// Parse color
 	pl.material.color.x = ft_atoi(fields[7]) / 255.0;
@@ -433,6 +435,7 @@ bool	cylinder_extract(char *line, t_data *data)
 	
 	// Apply transformation: scale radius, then translate to position
 	cl.trans = multiply_matrix(translation(x, y, z), scaling(radius, 1, radius));
+	cl.trans_inv = inverse_matrix(cl.trans);
 	
 	// Parse color
 	cl.material.color.x = ft_atoi(fields[9]) / 255.0;

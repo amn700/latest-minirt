@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 07:26:50 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,22 +26,19 @@ t_inters	*intersect_world(t_world world, t_ray ray)
 	{
 		if (obj->type == OBJ_SPHERE)
 		{
-			transformed_ray = transform_ray(ray, \
-				inverse_matrix(obj->shape.sp.trans));
+			transformed_ray = transform_ray(ray, obj->shape.sp.trans_inv);
 			intersect_sphere(&obj->shape.sp, transformed_ray, \
 				&all_intersections, obj);
 		}
 		else if (obj->type == OBJ_PLANE)
 		{
-			transformed_ray = transform_ray(ray, \
-				inverse_matrix(obj->shape.pl.trans));
+			transformed_ray = transform_ray(ray, obj->shape.pl.trans_inv);
 			intersect_plane(&obj->shape.pl, transformed_ray, \
 				&all_intersections, obj);
 		}
 		else if (obj->type == OBJ_CYLINDER)
 		{
-			transformed_ray = transform_ray(ray, \
-				inverse_matrix(obj->shape.cy.trans));
+			transformed_ray = transform_ray(ray, obj->shape.cy.trans_inv);
 			intersect_cylinder(&obj->shape.cy, transformed_ray, \
 				&all_intersections, obj);
 		}
@@ -70,22 +67,19 @@ bool	intersect_world_shadow(t_world world, t_ray ray, float max_distance)
 	{
 		if (obj->type == OBJ_SPHERE)
 		{
-			transformed_ray = transform_ray(ray, \
-				inverse_matrix(obj->shape.sp.trans));
+			transformed_ray = transform_ray(ray, obj->shape.sp.trans_inv);
 			intersect_sphere(&obj->shape.sp, transformed_ray, \
 				&intersections, obj);
 		}
 		else if (obj->type == OBJ_PLANE)
 		{
-			transformed_ray = transform_ray(ray, \
-				inverse_matrix(obj->shape.pl.trans));
+			transformed_ray = transform_ray(ray, obj->shape.pl.trans_inv);
 			intersect_plane(&obj->shape.pl, transformed_ray, \
 				&intersections, obj);
 		}
 		else if (obj->type == OBJ_CYLINDER)
 		{
-			transformed_ray = transform_ray(ray, \
-				inverse_matrix(obj->shape.cy.trans));
+			transformed_ray = transform_ray(ray, obj->shape.cy.trans_inv);
 			intersect_cylinder(&obj->shape.cy, transformed_ray, \
 				&intersections, obj);
 		}
@@ -96,8 +90,8 @@ bool	intersect_world_shadow(t_world world, t_ray ray, float max_distance)
 		current = intersections;
 		while (current)
 		{
-			// Check for shadow blockers
-			if (current->t >= 0 && current->t < max_distance)
+			// Check for shadow blockers - use adaptive epsilon
+			if (current->t > adaptive_epsilon(current->t) && current->t < max_distance)
 			{
 				while (intersections)
 				{

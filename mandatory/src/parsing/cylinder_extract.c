@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/02 22:48:42 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 09:01:42 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,9 @@ bool	cylinder_extract(char *line, t_data *data)
 	if (!tuple_validator(&fields[1], false, -INFINITY, INFINITY))
 		return (free_matrix(fields), false);
 	if (!tuple_validator(&fields[4], false, -1.0, 1.0))
+		return (free_matrix(fields), false);
+	if (ft_atof(fields[4]) == 0 && ft_atof(fields[5]) == 0 \
+		&& ft_atof(fields[6]) == 0)
 		return (free_matrix(fields), false);
 	if (!f_field_validation(fields[7]) || \
 		!f_range_validator(0.0, INFINITY, fields[7]))

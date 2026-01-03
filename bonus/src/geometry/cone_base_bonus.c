@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cone_base_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mac <mac@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/20 00:00:00 by mac               #+#    #+#             */
-/*   Updated: 2025/12/23 01:28:19 by mac              ###   ########.fr       */
+/*   Updated: 2026/01/03 07:16:17 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ t_cone	cone(void)
 		.height = 1,
 		.angle = atan(1.0f),
 		.trans = identity(),
+		.trans_inv = identity(),
 		.material = material(),
 		.minimum = 0.0f,
 		.maximum = 1.0f,

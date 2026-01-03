@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 07:16:17 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ t_sphere	sphere(void)
 {
 	return ((t_sphere){
 		.trans = identity(),
+		.trans_inv = identity(),
 		.diam = 1,
 		.center = (t_tuple){0, 0, 0, 1},
 		.material = material()
@@ -57,21 +58,20 @@ t_sphere	sp_transform(t_matrix m, t_sphere sp)
 		.diam = sp.diam,
 		.center = new_center,
 		.material = sp.material,
-		.trans = identity()
+		.trans = identity(),
+		.trans_inv = identity()
 	});
 }
 
 t_tuple	sphere_normal_at(t_sphere sp, t_tuple p)
 {
-	t_matrix	inverse;
 	t_tuple		object_point;
 	t_tuple		object_normal;
 	t_tuple		world_normal;
 
-	inverse = inverse_matrix(sp.trans);
-	object_point = multiply_matrix_by_tuple(inverse, p);
+	object_point = multiply_matrix_by_tuple(sp.trans_inv, p);
 	object_normal = substract_tuple(object_point, (t_tuple){0, 0, 0, 1});
-	world_normal = multiply_matrix_by_tuple(transposing_matrix(inverse), \
+	world_normal = multiply_matrix_by_tuple(transposing_matrix(sp.trans_inv), \
 		object_normal);
 	world_normal.w = 0;
 	return (normalizing_vector(world_normal));

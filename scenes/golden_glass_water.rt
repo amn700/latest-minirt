@@ -1,0 +1,18 @@
+A 0.2      255,255,255
+
+C 0,3,8   0,-0.2,-1   60
+
+l 5,8,5   0.9   255,255,255
+l -4,6,3   0.5   255,255,255
+
+# Golden ball - metallic reflective
+sp -2,1.2,0   2.4   255,215,0   ref:0.8   shine:150
+
+# Fully transparent glass ball
+sp 2,1,0   2   255,255,255   ref:0.1   refr:0.95:1.5   shine:200
+
+# Water plane - reflective blue
+pl 0,0,0   0,1,0   30,80,120   ref:0.4   shine:100
+
+# Sky backdrop
+pl 0,0,-20   0,0,1   135,206,235

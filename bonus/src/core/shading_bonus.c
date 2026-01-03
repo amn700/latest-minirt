@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 07:16:17 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,39 +35,39 @@ static t_tuple	get_material_contribution(t_comps *comp, t_light *light, \
 	point = comp->point;
 	if (comp->obj->type == OBJ_SPHERE)
 	{
-		point = multiply_matrix_by_tuple(inverse_matrix( \
-			comp->obj->shape.sp.trans), comp->point);
+		point = multiply_matrix_by_tuple(
+			comp->obj->shape.sp.trans_inv, comp->point);
 		mat = comp->obj->shape.sp.material;
 		if (mat.has_color_texture && mat.color_texture != NULL)
-			mat.color = (t_tuple){1, 1, 1, 0};  // Use white for texture objects
+			mat.color = (t_tuple){1, 1, 1, 0};
 		return (lighting(mat, *light, point, \
 			comp->eyev, comp->normalv, in_shadow, ambient_color));
 	}
 	else if (comp->obj->type == OBJ_PLANE)
 	{
-		point = multiply_matrix_by_tuple(inverse_matrix( \
-			comp->obj->shape.pl.trans), comp->point);
+		point = multiply_matrix_by_tuple(
+			comp->obj->shape.pl.trans_inv, comp->point);
 		mat = comp->obj->shape.pl.material;
 		if (mat.has_color_texture && mat.color_texture != NULL)
-			mat.color = (t_tuple){1, 1, 1, 0};  // Use white for texture objects
+			mat.color = (t_tuple){1, 1, 1, 0};
 		return (lighting(mat, *light, point, \
 			comp->eyev, comp->normalv, in_shadow, ambient_color));
 	}
 	else if (comp->obj->type == OBJ_CYLINDER)
 	{
-		point = multiply_matrix_by_tuple(inverse_matrix(comp->obj->shape.cy.trans), comp->point);
+		point = multiply_matrix_by_tuple(comp->obj->shape.cy.trans_inv, comp->point);
 		mat = comp->obj->shape.cy.material;
 		if (mat.has_color_texture && mat.color_texture != NULL)
-			mat.color = (t_tuple){1, 1, 1, 0};  // Use white for texture objects
+			mat.color = (t_tuple){1, 1, 1, 0};
 		return (lighting(mat, *light, point, \
 			comp->eyev, comp->normalv, in_shadow, ambient_color));
 	}
 	else if (comp->obj->type == OBJ_CONE)
 	{
-		point = multiply_matrix_by_tuple(inverse_matrix(comp->obj->shape.co.trans), comp->point);
+		point = multiply_matrix_by_tuple(comp->obj->shape.co.trans_inv, comp->point);
 		mat = comp->obj->shape.co.material;
 		if (mat.has_color_texture && mat.color_texture != NULL)
-			mat.color = (t_tuple){1, 1, 1, 0};  // Use white for texture objects
+			mat.color = (t_tuple){1, 1, 1, 0};
 		return (lighting(mat, *light, point, \
 			comp->eyev, comp->normalv, in_shadow, ambient_color));
 	}

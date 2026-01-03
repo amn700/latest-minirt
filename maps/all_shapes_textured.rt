@@ -5,23 +5,19 @@ L 8,15,-8 0.95 255,255,255
 
 
 # Large floor plane with colorful rings pattern, reflection, and refraction
-pl 0,0,0 0,1,0 180,180,180 ref:0.5 refr:0.2:1.5 pat:ring pa:255:80:80 pb:80:255:80 pc:80:80:255 pd:255:255:80 pe:255:80:255 pf:80:255:255 pscale:0.18:0.18:0.18
+pl 0,0,0 0,1,0 180,180,180 ref:0.5 refr:0.2:1.5 pat:checkers pa:255:80:80 pb:80:255:80
 
 
 # Center sphere with glass texture - highly reflective and refractive (larger)
 sp 0,4.5,0 4.2 220,240,255 texture:../z_textures/glass.png ref:0.9 refr:0.9:1.6 shine:0.9:512
 
 
-# Left sphere with sea texture - shiny (bigger, new color)
-sp -10,0,-3 3.5 80,180,255 texture:../z_textures/sea.png ref:0.3 shine:0.4:64
-
-
 # Right sphere with metal texture - highly reflective and shiny (bigger, new color)
-sp 10,2,-3 3.5 220,220,180 texture:../z_textures/Texturelabs_Metal_243S.png ref:0.6 shine:0.4:128
+sp 10,2,-3 3.5 220,220,180 texture:../z_textures/Texturelabs_Metal_243S.png ref:0.1 shine:0.2:50
 
 
 # Back cylinder with wood texture (bigger, new color)
-cy -8,0,10 0,1,0 3.2 6.2 1 180,120,60 texture:../z_textures/wood.png
+cy -8,0,10 0,1,0 3.2 18 1 180,120,60 texture:../z_textures/wood.png
 
 
 # Right cone with rocks texture (bigger, new color)

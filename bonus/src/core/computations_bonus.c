@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/28 17:57:20 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 07:26:50 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,16 +49,16 @@ static t_tuple	get_local_point(t_comps *comp)
 {
 	if (comp->obj->type == OBJ_SPHERE)
 		return (multiply_matrix_by_tuple(
-			inverse_matrix(comp->obj->shape.sp.trans), comp->point));
+			comp->obj->shape.sp.trans_inv, comp->point));
 	else if (comp->obj->type == OBJ_PLANE)
 		return (multiply_matrix_by_tuple(
-			inverse_matrix(comp->obj->shape.pl.trans), comp->point));
+			comp->obj->shape.pl.trans_inv, comp->point));
 	else if (comp->obj->type == OBJ_CYLINDER)
 		return (multiply_matrix_by_tuple(
-			inverse_matrix(comp->obj->shape.cy.trans), comp->point));
+			comp->obj->shape.cy.trans_inv, comp->point));
 	else if (comp->obj->type == OBJ_CONE)
 		return (multiply_matrix_by_tuple(
-			inverse_matrix(comp->obj->shape.co.trans), comp->point));
+			comp->obj->shape.co.trans_inv, comp->point));
 	return (comp->point);
 }
 
@@ -112,17 +112,17 @@ t_comps	*prepare_computations(t_inters *intersection, t_ray ray, t_inters *inter
 		new->inside = true;
 		new->normalv = negate_tuple(new->normalv);
 		new->over_point = add_tuple(new->point, \
-			tuple_scalar_mult(new->normalv, EPSILON));
+			tuple_scalar_mult(new->normalv, adaptive_epsilon(new->t)));
 		new->under_point = substract_tuple(new->point, \
-			tuple_scalar_mult(new->normalv, EPSILON));
+			tuple_scalar_mult(new->normalv, adaptive_epsilon(new->t)));
 	}
 	else
 	{
 		new->inside = false;
 		new->over_point = add_tuple(new->point, \
-			tuple_scalar_mult(original_normal, EPSILON));
+			tuple_scalar_mult(original_normal, adaptive_epsilon(new->t)));
 		new->under_point = substract_tuple(new->point, \
-			tuple_scalar_mult(original_normal, EPSILON));
+			tuple_scalar_mult(original_normal, adaptive_epsilon(new->t)));
 	}
 	new->reflectv = reflect(ray.direction, new->normalv);
 	compute_n1_n2(intersection, intersections, new);

@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/26 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 09:01:42 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,16 @@ float	sample_bump_map(mlx_texture_t *texture, float u, float v)
 	uint8_t		b;
 	float		height;
 
+	if (u < 0.0f)
+		u = 0.0f;
+	if (u > 1.0f)
+		u = 1.0f;
+	if (v < 0.0f)
+		v = 0.0f;
+	if (v > 1.0f)
+		v = 1.0f;
 	x = (uint32_t)(u * (texture->width - 1));
-	y = (uint32_t)(v * (texture->height - 1));
+	y = (uint32_t)((1.0f - v) * (texture->height - 1));
 	if (x >= texture->width)
 		x = texture->width - 1;
 	if (y >= texture->height)
@@ -53,8 +61,16 @@ t_tuple	sample_normal_map(mlx_texture_t *texture, float u, float v)
 	uint32_t	index;
 	t_tuple		normal;
 
+	if (u < 0.0f)
+		u = 0.0f;
+	if (u > 1.0f)
+		u = 1.0f;
+	if (v < 0.0f)
+		v = 0.0f;
+	if (v > 1.0f)
+		v = 1.0f;
 	x = (uint32_t)(u * (texture->width - 1));
-	y = (uint32_t)(v * (texture->height - 1));
+	y = (uint32_t)((1.0f - v) * (texture->height - 1));
 	if (x >= texture->width)
 		x = texture->width - 1;
 	if (y >= texture->height)

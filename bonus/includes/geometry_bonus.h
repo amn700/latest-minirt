@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 09:01:42 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,25 @@
 
 # include "types_bonus.h"
 
-# define EPSILON 0.001f
+# define EPSILON 0.0001f
 # define CONE_EPSILON 0.0001f
-# define PLANE_EPSILON 0.001f
+# define PLANE_EPSILON 0.0001f
+
+// Scale-adaptive epsilon: grows gently with distance
+// For t=1, returns ~0.0002; for t=100, returns ~0.01; for t=1000, returns ~0.1
+static inline float	adaptive_epsilon(float t)
+{
+	float	abs_t;
+	float	result;
+
+	abs_t = t;
+	if (t < 0)
+		abs_t = -t;
+	result = EPSILON * (1.0f + abs_t * 0.001f);
+	if (result > 0.5f)
+		result = 0.5f;
+	return (result);
+}
 
 t_sphere	sphere(void);
 t_material	material(void);

@@ -6,7 +6,7 @@
 /*   By: amn <amn@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/02 00:00:00 by amn               #+#    #+#             */
-/*   Updated: 2025/12/28 16:01:41 by amn              ###   ########.fr       */
+/*   Updated: 2026/01/03 07:16:17 by amn              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,7 @@ typedef struct s_sphere
 	t_tuple		center;
 	float		diam;
 	t_matrix	trans;
+	t_matrix	trans_inv;
 	t_material	material;
 }	t_sphere;
 
@@ -114,6 +115,7 @@ typedef struct s_plane
 	t_tuple		point;
 	t_tuple		normal;
 	t_matrix	trans;
+	t_matrix	trans_inv;
 	t_material	material;
 }	t_plane;
 
@@ -124,6 +126,7 @@ typedef struct s_cylinder
 	float		diameter;
 	float		height;
 	t_matrix	trans;
+	t_matrix	trans_inv;
 	t_material	material;
 	float		minimum;
 	float		maximum;
@@ -138,6 +141,7 @@ typedef struct s_cone
 	float		height;
 	float		angle;
 	t_matrix	trans;
+	t_matrix	trans_inv;
 	t_material	material;
 	float		minimum;
 	float		maximum;
